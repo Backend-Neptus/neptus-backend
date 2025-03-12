@@ -10,7 +10,7 @@ db = SQLAlchemy(app)
 
 class Turbidez(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    valor = db.Column(db.Float, nullable=False)
+    valor = db.Column(db.String, nullable=False)
 
 class Sensor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
