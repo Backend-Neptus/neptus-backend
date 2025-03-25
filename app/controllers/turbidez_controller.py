@@ -3,6 +3,31 @@ from app import db
 from app.models.turbidez_model import Turbidez
 
 def salvar_turbidez():
+    
+    """
+    Salva uma nova leitura de turbidez.
+    ---
+    tags:
+      - Leitura de Turbidez
+    consumes:
+      - application/json
+    parameters:
+      - in: body
+        name: body
+        required: true
+        schema:
+          type: object
+          properties:
+            turbidez:
+              type: string
+              example: "45.3"
+    responses:
+      201:
+        description: Leitura salva com sucesso
+      400:
+        description: Campo 'turbidez' é obrigatório
+    """
+    
     data = request.get_json()
 
     if 'turbidez' not in data:
