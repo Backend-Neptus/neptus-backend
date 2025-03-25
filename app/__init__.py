@@ -13,12 +13,9 @@ from app.controllers import turbidez_controller
 
 app.add_url_rule('/leitura/turbidez', 'salvar_turbidez', turbidez_controller.salvar_turbidez, methods=['POST'])
 
-@app.route('/apidocs')
-def apidocs():
-    return "Swagger API Docs" 
 @app.route('/')
 def home():
-    return redirect(url_for('apidocs'))
+    return redirect(url_for('flasgger.apidocs'))
 
 with app.app_context():
     db.create_all()
