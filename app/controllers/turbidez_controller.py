@@ -8,7 +8,7 @@ def salvar_turbidez():
     Salva uma nova leitura de turbidez.
     ---
     tags:
-      - Leitura de Turbidez
+      - Turbidez
     consumes:
       - application/json
     parameters:
