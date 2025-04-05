@@ -1,7 +1,9 @@
 from flask import request, jsonify
 from app import db
 from app.models.usuario_model import Usuario
-from app.models.perfil_model import Perfil  # Não esquecer de importar!
+from app.models.perfil_model import Perfil 
+from app.utils.permissoes import permission_required, login_required
+from app.enum.PermissionEnum import PermissionEnum
 
 
 def salvar_usuario():
@@ -62,7 +64,8 @@ def salvar_usuario():
 
     return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
 
-
+@login_required
+@permission_required(PermissionEnum.USUARIO_LISTAR)
 def listar_usuarios():
     """
     Lista todos os usuários cadastrados.

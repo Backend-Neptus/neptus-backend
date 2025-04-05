@@ -1,4 +1,5 @@
 from flask import Flask, redirect, url_for
+from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
 from app.config.config import Config
 from flasgger import Swagger
@@ -10,6 +11,7 @@ swagger = Swagger(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+jwt = JWTManager(app)
 
 # FAÇA O REGISTRO DA MODEL AQUI PARA ELA SER CRIADA NO BANCO DE DADOS COM O COMANDO ABAIXO
 # NAO ESQUECA DE CRIAR O BANCO DE DADOS ANTES
@@ -18,7 +20,7 @@ migrate = Migrate(app, db)
 # CUIDADO AO FAZER MIGRATE 
 from app.models import Sensor, Turbidez, Perfil, Usuario
 
-from app.controllers import turbidez_controller, perfil_controller, usuario_controller
+from app.controllers import turbidez_controller, perfil_controller, usuario_controller, auth_controller
 
 app.add_url_rule('/leitura/turbidez', 'salvar_turbidez', turbidez_controller.salvar_turbidez, methods=['POST'])
 app.add_url_rule('/perfil', 'salvar_perfil', perfil_controller.salvar_perfil, methods=['POST'])
@@ -27,6 +29,7 @@ app.add_url_rule('/perfil/<int:id>','atualizar_perfil', perfil_controller.atuali
 app.add_url_rule('/usuarios', 'salvar_usuario', usuario_controller.salvar_usuario, methods=['POST'])
 app.add_url_rule('/usuarios', 'listar_usuarios', usuario_controller.listar_usuarios, methods=['GET'])
 app.add_url_rule('/usuarios/<int:id>', 'atualizar_usuario', usuario_controller.atualizar_usuario, methods=['PUT'])
+app.add_url_rule('/login', 'login', auth_controller.login, methods=['POST'])
 
 
 @app.route('/')
