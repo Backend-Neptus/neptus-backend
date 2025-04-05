@@ -16,7 +16,7 @@ migrate = Migrate(app, db)
 # FLASK DB MIGRATE -M "MESSAGE TEXT"
 # FLASK DB UPGRADE
 # CUIDADO AO FAZER MIGRATE 
-from app.models import Sensor, Turbidez 
+from app.models import Sensor, Turbidez, Perfil, Usuario
 
 from app.controllers import turbidez_controller, perfil_controller, usuario_controller
 
