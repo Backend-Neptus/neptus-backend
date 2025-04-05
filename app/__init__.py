@@ -18,11 +18,14 @@ migrate = Migrate(app, db)
 # CUIDADO AO FAZER MIGRATE 
 from app.models import Sensor, Turbidez 
 
-from app.controllers import turbidez_controller, perfil_controller
+from app.controllers import turbidez_controller, perfil_controller, usuario_controller
 
 app.add_url_rule('/leitura/turbidez', 'salvar_turbidez', turbidez_controller.salvar_turbidez, methods=['POST'])
 app.add_url_rule('/perfil', 'salvar_perfil', perfil_controller.salvar_perfil, methods=['POST'])
 app.add_url_rule('/perfil', 'listar_perfil', perfil_controller.listar_perfil, methods=['GET'])
+app.add_url_rule('/usuarios', 'salvar_usuario', usuario_controller.salvar_usuario, methods=['POST'])
+app.add_url_rule('/usuarios', 'listar_usuarios', usuario_controller.listar_usuarios, methods=['GET'])
+app.add_url_rule('/usuarios/<int:id>', 'atualizar_usuario', usuario_controller.atualizar_usuario, methods=['PUT'])
 
 @app.route('/')
 def home():

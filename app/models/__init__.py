@@ -3,3 +3,4 @@
 from app.models.sensor_model import Sensor
 from app.models.turbidez_model import Turbidez
 from app.models.perfil_model import Perfil
+from .usuario_model import Usuario

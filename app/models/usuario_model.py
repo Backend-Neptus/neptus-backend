@@ -1,0 +1,20 @@
+from app import db
+from werkzeug.security import generate_password_hash, check_password_hash
+from app.models.perfil_model import Perfil
+
+class Usuario(db.Model):
+    __tablename__ = 'usuario'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
+    senha_hash = db.Column(db.String(200), nullable=False)
+
+    perfil_id = db.Column(db.Integer, db.ForeignKey('perfil.id'), nullable=False)
+    perfil = db.relationship('Perfil', backref=db.backref('usuarios', lazy=True))
+
+    def set_senha(self, senha):
+        self.senha_hash = generate_password_hash(senha)
+
+    def verificar_senha(self, senha):
+        return check_password_hash(self.senha_hash, senha)
