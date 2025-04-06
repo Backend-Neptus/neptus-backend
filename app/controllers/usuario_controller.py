@@ -6,6 +6,8 @@ from app.utils.permissoes import permission_required, login_required
 from app.enum.PermissionEnum import PermissionEnum
 
 
+@login_required
+@permission_required(PermissionEnum.USUARIO_CRIAR)
 def salvar_usuario():
     """
     Cadastra um novo usuário.

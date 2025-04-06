@@ -4,15 +4,30 @@ from flask_sqlalchemy import SQLAlchemy
 from app.config.config import Config
 from flasgger import Swagger
 from flask_migrate import Migrate
+from authlib.integrations.flask_client import OAuth
 
 app = Flask(__name__)
 app.config.from_object(Config)
 swagger = Swagger(app)
 
+oauth = OAuth(app)
+
+google = oauth.register(
+    name='google',
+    client_id='1002584745082-4dhdl28pa57em81klq5kp4ch97b8k5ru.apps.googleusercontent.com',
+    client_secret='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',
+    access_token_url='https://accounts.google.com/o/oauth2/token',
+    access_token_params=None,
+    authorize_url='https://accounts.google.com/o/oauth2/auth',
+    authorize_params={'access_type': 'offline', 'prompt': 'consent'},
+    api_base_url='https://www.googleapis.com/oauth2/v1/',
+    client_kwargs={'scope': 'email profile'},
+)
+
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
-
+oauth = OAuth(app)
 # FAÇA O REGISTRO DA MODEL AQUI PARA ELA SER CRIADA NO BANCO DE DADOS COM O COMANDO ABAIXO
 # NAO ESQUECA DE CRIAR O BANCO DE DADOS ANTES
 # FLASK DB MIGRATE -M "MESSAGE TEXT"
@@ -29,7 +44,10 @@ app.add_url_rule('/perfil/<int:id>','atualizar_perfil', perfil_controller.atuali
 app.add_url_rule('/usuarios', 'salvar_usuario', usuario_controller.salvar_usuario, methods=['POST'])
 app.add_url_rule('/usuarios', 'listar_usuarios', usuario_controller.listar_usuarios, methods=['GET'])
 app.add_url_rule('/usuarios/<int:id>', 'atualizar_usuario', usuario_controller.atualizar_usuario, methods=['PUT'])
+app.add_url_rule('/register', 'register', auth_controller.register, methods=['POST'])
 app.add_url_rule('/login', 'login', auth_controller.login, methods=['POST'])
+app.add_url_rule('/login/google', 'login_google', auth_controller.login_google, methods=['GET'])
+app.add_url_rule('/login/google/callback', 'authorize_google', auth_controller.authorize_google)
 
 
 @app.route('/')
