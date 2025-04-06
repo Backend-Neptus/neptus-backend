@@ -175,7 +175,7 @@ def authorize_google():
     if usuario.is_active == False:
         return jsonify({'erro': 'Usuário desativado'}), 401
     
-    access_token = create_access_token(identity=usuario.id)
+    access_token = create_access_token(identity=str(usuario.id))
     return jsonify({'token': access_token})
   
   

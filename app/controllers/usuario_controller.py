@@ -91,7 +91,8 @@ def listar_usuarios():
 
     return jsonify(resultado), 200
 
-
+@login_required
+@permission_required(PermissionEnum.USUARIO_EDITAR)
 def atualizar_usuario(id):
     """
     Atualiza os dados de um usuário existente.

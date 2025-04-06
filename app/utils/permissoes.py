@@ -15,6 +15,10 @@ def permission_required(permissao):
                 return jsonify({'erro': 'Usuário sem perfil'}), 403
             permissoes_lista = usuario.perfil.permissoes
 
+            # Permitir acesso total para administradores
+            if usuario.is_admin:
+                return func(*args, **kwargs)
+
             if permissao.value not in permissoes_lista:
                 return jsonify({'erro': 'Permissão negada'}), 403
 
@@ -32,6 +36,8 @@ def login_required(func):
 
             if not usuario:
                 return jsonify({'erro': 'Usuário não encontrado'}), 404
+            if not usuario.is_active:
+                return jsonify({'erro': 'Seu usuário foi desativado'}), 401
 
             return func(*args, **kwargs)
         except Exception as e:
