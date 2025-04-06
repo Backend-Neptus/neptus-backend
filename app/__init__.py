@@ -5,6 +5,7 @@ from app.config.config import Config
 from flasgger import Swagger
 from flask_migrate import Migrate
 from authlib.integrations.flask_client import OAuth
+from flask_mail import Mail
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -28,6 +29,8 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 jwt = JWTManager(app)
 oauth = OAuth(app)
+mail = Mail(app)
+
 # FAÇA O REGISTRO DA MODEL AQUI PARA ELA SER CRIADA NO BANCO DE DADOS COM O COMANDO ABAIXO
 # NAO ESQUECA DE CRIAR O BANCO DE DADOS ANTES
 # FLASK DB MIGRATE -M "MESSAGE TEXT"
@@ -46,6 +49,7 @@ app.add_url_rule('/usuarios', 'listar_usuarios', usuario_controller.listar_usuar
 app.add_url_rule('/usuarios/<int:id>', 'atualizar_usuario', usuario_controller.atualizar_usuario, methods=['PUT'])
 app.add_url_rule('/register', 'register', auth_controller.register, methods=['POST'])
 app.add_url_rule('/login', 'login', auth_controller.login, methods=['POST'])
+app.add_url_rule('/reset-password', 'reset_password_request', auth_controller.reset_password_request, methods=['POST'])
 app.add_url_rule('/login/google', 'login_google', auth_controller.login_google, methods=['GET'])
 app.add_url_rule('/login/google/callback', 'authorize_google', auth_controller.authorize_google)
 

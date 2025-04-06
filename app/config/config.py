@@ -5,3 +5,10 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'neptus-chave-secreta'
     JWT_SECRET_KEY = 'jwt-chave-secreta'
+    
+    MAIL_SERVER = 'mail.cloudsyntax.com.br'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'neptus@cloudsyntax.com.br'
+    MAIL_PASSWORD = 'y9UyPGZZ9tXahZdYuAZ4'
+    MAIL_DEFAULT_SENDER = 'neptus@cloudsyntax.com.br'
