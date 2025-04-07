@@ -2,7 +2,7 @@
 from app import db
 from app.models.perfil_model import Perfil
 
-def default_perfil():
+def get_default_perfil():
     perfil = db.session.query(Perfil).filter(Perfil.nome == "Usuario").first()
 
     if not perfil:
