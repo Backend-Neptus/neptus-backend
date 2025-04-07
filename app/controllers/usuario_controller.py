@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from app import db
 from app.models.usuario_model import Usuario
-from app.models.perfil_model import Perfil 
+from app.models.perfil_model import Perfil
 from app.utils.permissoes import permission_required, login_required
 from app.enum.PermissionEnum import PermissionEnum
 
@@ -9,7 +9,7 @@ from app.enum.PermissionEnum import PermissionEnum
 @login_required
 @permission_required(PermissionEnum.USUARIO_CRIAR)
 def salvar_usuario():
-    """
+  """
     Cadastra um novo usuário.
     ---
     tags:
@@ -41,35 +41,35 @@ def salvar_usuario():
       400:
         description: Campos obrigatórios ausentes ou e-mail já cadastrado
     """
-    data = request.get_json()
+  data = request.get_json()
 
-    if not all(k in data for k in ('nome', 'email', 'senha', 'perfil_id')):
-        return jsonify({"erro": "Campos obrigatórios: nome, email, senha, perfil_id"}), 400
+  if not all(k in data for k in ('nome', 'email', 'senha', 'perfil_id')):
+    return jsonify(
+        {"erro": "Campos obrigatórios: nome, email, senha, perfil_id"}), 400
 
-    if Usuario.query.filter_by(email=data['email']).first():
-        return jsonify({"erro": "E-mail já cadastrado"}), 400
+  if Usuario.query.filter_by(email=data['email']).first():
+    return jsonify({"erro": "E-mail já cadastrado"}), 400
 
-    # Verifica se o perfil existe
-    perfil = Perfil.query.get(data['perfil_id'])
-    if not perfil:
-        return jsonify({'erro': 'Perfil não encontrado'}), 404
+  # Verifica se o perfil existe
+  perfil = Perfil.query.get(data['perfil_id'])
+  if not perfil:
+    return jsonify({'erro': 'Perfil não encontrado'}), 404
 
-    novo_usuario = Usuario(
-        nome=data['nome'],
-        email=data['email'],
-        perfil_id=data['perfil_id']
-    )
-    novo_usuario.set_senha(data['senha'])
+  novo_usuario = Usuario(nome=data['nome'],
+                         email=data['email'],
+                         perfil_id=data['perfil_id'])
+  novo_usuario.set_senha(data['senha'])
 
-    db.session.add(novo_usuario)
-    db.session.commit()
+  db.session.add(novo_usuario)
+  db.session.commit()
 
-    return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
+  return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
+
 
 @login_required
 @permission_required(PermissionEnum.USUARIO_LISTAR)
 def listar_usuarios():
-    """
+  """
     Lista todos os usuários cadastrados.
     ---
     tags:
@@ -78,23 +78,25 @@ def listar_usuarios():
       200:
         description: Lista de usuários
     """
-    usuarios = Usuario.query.all()
-    resultado = []
+  usuarios = Usuario.query.all()
+  resultado = []
 
-    for usuario in usuarios:
-        resultado.append({
-            'id': usuario.id,
-            'nome': usuario.nome,
-            'email': usuario.email,
-            'perfil_id': usuario.perfil_id
-        })
+  for usuario in usuarios:
+    resultado.append({
+        'id': usuario.id,
+        'nome': usuario.nome,
+        'email': usuario.email,
+        'perfil_id': usuario.perfil_id,
+        'perfil_nome': usuario.perfil.nome
+    })
 
-    return jsonify(resultado), 200
+  return jsonify(resultado), 200
+
 
 @login_required
 @permission_required(PermissionEnum.USUARIO_EDITAR)
 def atualizar_usuario(id):
-    """
+  """
     Atualiza os dados de um usuário existente.
     ---
     tags:
@@ -128,26 +130,26 @@ def atualizar_usuario(id):
       404:
         description: Usuário não encontrado
     """
-    usuario = Usuario.query.get(id)
+  usuario = Usuario.query.get(id)
 
-    if not usuario:
-        return jsonify({"erro": "Usuário não encontrado"}), 404
+  if not usuario:
+    return jsonify({"erro": "Usuário não encontrado"}), 404
 
-    data = request.get_json()
+  data = request.get_json()
 
-    if 'nome' in data:
-        usuario.nome = data['nome']
-    if 'email' in data:
-        usuario.email = data['email']
-    if 'senha' in data:
-        usuario.set_senha(data['senha'])
-    if 'perfil_id' in data:
-        # Verifica se o perfil existe antes de atualizar
-        perfil = Perfil.query.get(data['perfil_id'])
-        if not perfil:
-            return jsonify({'erro': 'Perfil não encontrado'}), 404
-        usuario.perfil_id = data['perfil_id']
+  if 'nome' in data:
+    usuario.nome = data['nome']
+  if 'email' in data:
+    usuario.email = data['email']
+  if 'senha' in data:
+    usuario.set_senha(data['senha'])
+  if 'perfil_id' in data:
+    # Verifica se o perfil existe antes de atualizar
+    perfil = Perfil.query.get(data['perfil_id'])
+    if not perfil:
+      return jsonify({'erro': 'Perfil não encontrado'}), 404
+    usuario.perfil_id = data['perfil_id']
 
-    db.session.commit()
+  db.session.commit()
 
-    return jsonify({"mensagem": "Usuário atualizado com sucesso!"}), 200
+  return jsonify({"mensagem": "Usuário atualizado com sucesso!"}), 200

@@ -1,10 +1,17 @@
 from flask import request, jsonify
 from app import db
+from app.exceptions import BadRequestError, ConflictRequestError, NotFoundRequestError
 from app.models.perfil_model import Perfil
 from app.enum.PermissionEnum import PermissionEnum
+from app.models.usuario_model import Usuario
+from app.services.perfil_service import PerfilService
+from app.utils.permissoes import permission_required, login_required
 
+
+@login_required
+@permission_required(PermissionEnum.PERFIL_CRIAR)
 def salvar_perfil():
-    """
+  """
     Salva um novo perfil.
     ---
     tags:
@@ -30,31 +37,21 @@ def salvar_perfil():
       400:
         description: O campo 'nome' é obrigatório
     """
-    
-    data = request.get_json()
-
-    if 'nome' not in data:
-        return jsonify({"erro": "O campo 'nome' é obrigatório"}), 400
+  data = request.get_json()
+  try:
     nome = data.get("nome")
-    permissoes = [p.lower() for p in data.get("permissoes", [])]
-    
-    permissoes_validas = {perm.value for perm in PermissionEnum}
-    permissoes_invalidas = [p for p in permissoes if p not in permissoes_validas]
-    if permissoes_invalidas:
-        return jsonify({"erro": f"Permissões inválidas: {permissoes_invalidas}"}), 400
-      
-    novo_perfil = Perfil(nome=nome, permissoes=permissoes)
-    
-    if db.session.query(Perfil).filter_by(nome=nome).first() is not None:
-        return jsonify({"erro": "Ja existe um perfil com esse nome"}), 400
-    
-    db.session.add(novo_perfil)
-    db.session.commit()
+    permissoes = data.get("permissoes", [])
+    return jsonify(PerfilService.criar_perfil(nome, permissoes).to_dict()), 201
+  except BadRequestError as e:
+    return jsonify(e.to_dict()), 400
+  except ConflictRequestError as e:
+    return jsonify({'erro': e.message}), 400
 
-    return jsonify({"mensagem": "Perfil criado com sucesso!"}), 201
 
+@login_required
+@permission_required(PermissionEnum.PERFIL_LISTAR)
 def listar_perfil():
-    """
+  """
     Listar todos os perfis cadastrados.
     ---
     tags:
@@ -81,21 +78,11 @@ def listar_perfil():
                   type: string
                 example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
     """
-    
-    perfis = Perfil.query.all()
-    perfis_json = [
-        {
-            "id": perfil.id,
-            "nome": perfil.nome,
-            "permissoes": perfil.permissoes
-        }
-        for perfil in perfis
-    ]
-    return jsonify(perfis_json)
-  
+  return jsonify(PerfilService.listar_perfis()), 200
+
 
 def atualizar_perfil(id):
-    """
+  """
     Atualiza um perfil existente.
     ---
     tags:
@@ -124,33 +111,84 @@ def atualizar_perfil(id):
         description: Perfil atualizado com sucesso!
       400:
         description: Dados inválidos
+      409:
+        description: Perfil com nome ja cadastrado
       404:
         description: Perfil não encontrado
     """
-    data = request.get_json()
-
-    perfil = Perfil.query.get(id)
-    if not perfil:
-        return jsonify({"erro": "Perfil não encontrado"}), 404
-
-    print(data.get("nome"))
+  data = request.get_json()
+  try:
     nome = data.get("nome")
-    permissoes = [p.lower() for p in data.get("permissoes", [])]
-    if not nome:
-        return jsonify({"erro": "O campo 'nome' é obrigatório"}), 400
+    permissoes = data.get("permissoes", [])
+    return jsonify({
+        'messagem':
+        "Perfil atualizado com sucesso",
+        'perfil':
+        PerfilService.atualizar_perfil(id, nome, permissoes).to_dict()
+    }), 200
+  except BadRequestError as e:
+    return jsonify(e.to_dict()), 400
+  except ConflictRequestError as e:
+    return jsonify({'erro': e.message}), 409
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404
 
-    permissoes_validas = {perm.value for perm in PermissionEnum}
-    permissoes_invalidas = [p for p in permissoes if p not in permissoes_validas]
-    if permissoes_invalidas:
-        return jsonify({"erro": f"Permissões inválidas: {permissoes_invalidas}"}), 400
-
-    perfil_existente = Perfil.query.filter_by(nome=nome).first()
-    if perfil_existente and perfil_existente.id != perfil.id:
-        return jsonify({"erro": "Já existe um perfil com esse nome"}), 400
-
-    perfil.nome = nome
-    perfil.permissoes = permissoes
-
-    db.session.commit()
-
-    return jsonify({"mensagem": "Perfil atualizado com sucesso!"}), 200
+@login_required
+@permission_required(PermissionEnum.PERFIL_LISTAR)
+def listar_perfil():
+  """
+    Listar todos os perfis cadastrados.
+    ---
+    tags:
+      - Perfil
+    produces:
+      - application/json
+    responses:
+      200:
+        description: Lista de perfis retornada com sucesso.
+        schema:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              nome:
+                type: string
+                example: "Administrador"
+              permissoes:
+                type: array
+                items:
+                  type: string
+                example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
+    """
+  return jsonify(PerfilService.listar_perfis()), 200
+@login_required
+@permission_required(PermissionEnum.PERFIL_EXCLUIR)
+def deletar_perfil(id):
+  """
+    Deleta um perfil existente.
+    ---
+    tags:
+      - Perfil
+    parameters:
+      - in: path
+        name: id
+        required: true
+        type: integer
+    responses:
+      200:
+        description: Perfil deletado com sucesso! todos os usuarios foram transferidos para o perfil default
+      404:
+        description: Perfil nao encontrado
+      400:
+        description: Perfil default nao pode ser deletado
+    """
+  
+  try:
+    return jsonify({'messagem': PerfilService.deletar_perfil(id)}), 200
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404
+  except BadRequestError as e:
+    return jsonify({'erro': e.message}), 400

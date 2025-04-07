@@ -1,6 +1,5 @@
-from flask import request, jsonify, url_for
 from flask_jwt_extended import create_access_token
-from app import db, google
+from app import db
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
@@ -25,7 +24,7 @@ class AuthService:
     db.session.add(usuario)
     db.session.commit()
 
-    return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
+    return "Usuário cadastrado com sucesso!"
 
   def login(self, email: str, senha: str):
     usuario = Usuario.query.filter_by(email=email).first()

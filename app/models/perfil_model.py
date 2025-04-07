@@ -4,8 +4,11 @@ from sqlalchemy.dialects.postgresql import ARRAY
 
 
 class Perfil(db.Model):
-    __tablename__ = 'perfil'
-    id = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(50), unique=True, nullable=False)
-    permissoes = db.Column(ARRAY(db.String), nullable=False, default=[])
+  __tablename__ = 'perfil'
+  id = db.Column(db.Integer, primary_key=True)
+  nome = db.Column(db.String(50), unique=True, nullable=False)
+  permissoes = db.Column(ARRAY(db.String), nullable=False, default=[])
+  usuarios = db.relationship('Usuario', back_populates='perfil')
 
+  def to_dict(self):
+    return {"id": self.id, "nome": self.nome, "permissoes": self.permissoes}

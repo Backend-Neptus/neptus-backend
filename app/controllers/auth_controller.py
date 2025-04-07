@@ -1,13 +1,8 @@
 from flask import request, jsonify, url_for
-from flask_jwt_extended import create_access_token
-from app import db, google
+from app import google
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
-
-from app.models.usuario_model import Usuario
-from app.utils import default_perfil, reset_password
-
 from app.services.auth_service import AuthService
 
 
@@ -59,7 +54,7 @@ def register():
     nome = data.get('nome')
     email = data.get('email')
     senha = data.get('senha')
-    return AuthService().registrar_usuario(nome, email, senha)
+    return jsonify({'token': AuthService().registrar_usuario(nome, email, senha)}), 201
   except BadRequestError as e:
     return jsonify({"erro": e.message}), 400
   except ConflictRequestError as e:

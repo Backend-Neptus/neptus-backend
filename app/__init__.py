@@ -44,6 +44,7 @@ app.add_url_rule('/leitura/turbidez', 'salvar_turbidez', turbidez_controller.sal
 app.add_url_rule('/perfil', 'salvar_perfil', perfil_controller.salvar_perfil, methods=['POST'])
 app.add_url_rule('/perfil', 'listar_perfil', perfil_controller.listar_perfil, methods=['GET'])
 app.add_url_rule('/perfil/<int:id>','atualizar_perfil', perfil_controller.atualizar_perfil, methods=['PUT'])
+app.add_url_rule('/perfil/<int:id>','deletar_perfil', perfil_controller.deletar_perfil, methods=['DELETE'])
 app.add_url_rule('/usuarios', 'salvar_usuario', usuario_controller.salvar_usuario, methods=['POST'])
 app.add_url_rule('/usuarios', 'listar_usuarios', usuario_controller.listar_usuarios, methods=['GET'])
 app.add_url_rule('/usuarios/<int:id>', 'atualizar_usuario', usuario_controller.atualizar_usuario, methods=['PUT'])
