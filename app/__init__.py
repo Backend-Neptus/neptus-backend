@@ -59,6 +59,3 @@ app.add_url_rule('/login/google/callback', 'authorize_google', auth_controller.a
 def home():
     return redirect(url_for('flasgger.apidocs'))
 
-with app.app_context():
-    db.create_all()
-

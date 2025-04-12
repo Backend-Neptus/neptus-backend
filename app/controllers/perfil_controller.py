@@ -67,8 +67,8 @@ def listar_perfil():
             type: object
             properties:
               id:
-                type: integer
-                example: 1
+                type: string  # Alterado de integer para string (UUID)
+                example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
               nome:
                 type: string
                 example: "Administrador"
@@ -77,7 +77,7 @@ def listar_perfil():
                 items:
                   type: string
                 example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
-    """
+  """
   return jsonify(PerfilService.listar_perfis()), 200
 
 
@@ -91,7 +91,8 @@ def atualizar_perfil(id):
       - in: path
         name: id
         required: true
-        type: integer
+        type: string  # Alterado de integer para string (UUID)
+        example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
       - in: body
         name: body
         required: true
@@ -115,7 +116,7 @@ def atualizar_perfil(id):
         description: Perfil com nome ja cadastrado
       404:
         description: Perfil não encontrado
-    """
+  """
   data = request.get_json()
   try:
     nome = data.get("nome")
@@ -132,6 +133,7 @@ def atualizar_perfil(id):
     return jsonify({'erro': e.message}), 409
   except NotFoundRequestError as e:
     return jsonify({'erro': e.message}), 404
+
 
 @login_required
 @permission_required(PermissionEnum.PERFIL_LISTAR)
@@ -152,8 +154,8 @@ def listar_perfil():
             type: object
             properties:
               id:
-                type: integer
-                example: 1
+                type: string  # Alterado de integer para string (UUID)
+                example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
               nome:
                 type: string
                 example: "Administrador"
@@ -162,8 +164,10 @@ def listar_perfil():
                 items:
                   type: string
                 example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
-    """
+  """
   return jsonify(PerfilService.listar_perfis()), 200
+
+
 @login_required
 @permission_required(PermissionEnum.PERFIL_EXCLUIR)
 def deletar_perfil(id):
@@ -176,7 +180,8 @@ def deletar_perfil(id):
       - in: path
         name: id
         required: true
-        type: integer
+        type: string  # Alterado de integer para string (UUID)
+        example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
     responses:
       200:
         description: Perfil deletado com sucesso! todos os usuarios foram transferidos para o perfil default
@@ -184,8 +189,7 @@ def deletar_perfil(id):
         description: Perfil nao encontrado
       400:
         description: Perfil default nao pode ser deletado
-    """
-  
+  """
   try:
     return jsonify({'messagem': PerfilService.deletar_perfil(id)}), 200
   except NotFoundRequestError as e:

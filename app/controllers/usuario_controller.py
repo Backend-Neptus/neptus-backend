@@ -1,9 +1,11 @@
 from flask import request, jsonify
 from app import db
+from app.exceptions import BadRequestError, ConflictRequestError, NotFoundRequestError
 from app.models.usuario_model import Usuario
 from app.models.perfil_model import Perfil
 from app.utils.permissoes import permission_required, login_required
 from app.enum.PermissionEnum import PermissionEnum
+from app.services.usuario_service import UsuarioService
 
 
 @login_required
@@ -23,6 +25,9 @@ def salvar_usuario():
         schema:
           type: object
           properties:
+            id:
+              type: string  # Mudado de integer para string (UUID)
+              example: "51b03e1a-f849-438e-951a-f19a27b35902" 
             nome:
               type: string
               example: "Guido van Rossum"
@@ -33,37 +38,29 @@ def salvar_usuario():
               type: string
               example: "123456"
             perfil_id:
-              type: integer
-              example: 1
+              type: string 
+              example: "1a7e8be3-b9b1-43a0-a04d-47dfb91372db" 
     responses:
       201:
         description: Usuário cadastrado com sucesso!
       400:
         description: Campos obrigatórios ausentes ou e-mail já cadastrado
-    """
+"""
   data = request.get_json()
 
-  if not all(k in data for k in ('nome', 'email', 'senha', 'perfil_id')):
+  try:
+    nome = data.get('nome')
+    email = data.get('email')
+    senha = data.get('senha')
+    perfil_id = data.get('perfil_id')
     return jsonify(
-        {"erro": "Campos obrigatórios: nome, email, senha, perfil_id"}), 400
-
-  if Usuario.query.filter_by(email=data['email']).first():
-    return jsonify({"erro": "E-mail já cadastrado"}), 400
-
-  # Verifica se o perfil existe
-  perfil = Perfil.query.get(data['perfil_id'])
-  if not perfil:
-    return jsonify({'erro': 'Perfil não encontrado'}), 404
-
-  novo_usuario = Usuario(nome=data['nome'],
-                         email=data['email'],
-                         perfil_id=data['perfil_id'])
-  novo_usuario.set_senha(data['senha'])
-
-  db.session.add(novo_usuario)
-  db.session.commit()
-
-  return jsonify({"mensagem": "Usuário cadastrado com sucesso!"}), 201
+        UsuarioService.registrar_usuario(nome, email, senha, perfil_id)), 201
+  except BadRequestError as e:
+    return jsonify({"erro": e.message}), 400
+  except ConflictRequestError as e:
+    return jsonify({"erro": e.message}), 409
+  except NotFoundRequestError as e:
+    return jsonify({"erro": e.message}), 404
 
 
 @login_required
@@ -105,7 +102,8 @@ def atualizar_usuario(id):
       - in: path
         name: id
         required: true
-        type: integer
+        type: string  # Mudado de integer para string (UUID)
+        example: "51b03e1a-f849-438e-951a-f19a27b35902"  
       - in: body
         name: body
         required: true
@@ -122,14 +120,15 @@ def atualizar_usuario(id):
               type: string
               example: "nova_senha"
             perfil_id:
-              type: integer
-              example: 2
+              type: string  # Mudado de integer para string (UUID)
+              example: "1a7e8be3-b9b1-43a0-a04d-47dfb91372db"  
     responses:
       200:
         description: Usuário atualizado com sucesso!
       404:
         description: Usuário não encontrado
-    """
+"""
+
   usuario = Usuario.query.get(id)
 
   if not usuario:
