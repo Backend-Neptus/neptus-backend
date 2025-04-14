@@ -1,4 +1,5 @@
 from flask import request, jsonify, url_for
+from flask_jwt_extended import get_jwt_identity, jwt_required
 from app import google
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
@@ -54,7 +55,8 @@ def register():
     nome = data.get('nome')
     email = data.get('email')
     senha = data.get('senha')
-    return jsonify({'token': AuthService().registrar_usuario(nome, email, senha)}), 201
+    return jsonify(
+        AuthService().registrar_usuario(nome, email, senha)), 201
   except BadRequestError as e:
     return jsonify({"erro": e.message}), 400
   except ConflictRequestError as e:
@@ -104,7 +106,7 @@ def login():
   email = data.get('email')
   senha = data.get('senha')
   try:
-    return jsonify({'token': AuthService().login(email, senha)}), 200
+    return jsonify({'access_token': AuthService().login(email, senha)}), 200
   except NotFoundRequestError as e:
     return jsonify({"erro": e.message}), 401
   except UserDisabledError as e:
@@ -205,3 +207,37 @@ def reset_password_request():
     return jsonify({"erro": str(e)}), 403
   except GoogleLoginRequestError as e:
     return jsonify({"erro": str(e)}), 403
+
+
+@jwt_required(refresh=True)
+
+def refresh_token():
+  """
+    Gera um novo token de acesso.
+    ---
+    tags:
+      - Autenticação
+    responses:
+      200:
+        description: Novo token de acesso gerado com sucesso.
+        examples:
+          application/json:
+            access_token: eyJ0eXAiOiJKV1QiLCJhbGciOi...
+      403:
+        description: Usuário desativado ou cadastrado via Google.
+        examples:
+          application/json:
+            erro: Usuário desativado
+      404:
+        description: Usuário nao encontrado.
+        examples:
+          application/json:
+            erro: Usuário nao encontrado
+    """
+  usuario_id = get_jwt_identity()
+  try:
+    return jsonify({'access_token': AuthService().refresh_token(usuario_id)}), 200
+  except UserDisabledError as e:
+    return jsonify({"erro": str(e)}), 403
+  except NotFoundRequestError as e:
+    return jsonify({"erro": str(e)}), 404

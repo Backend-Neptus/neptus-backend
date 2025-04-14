@@ -53,6 +53,7 @@ app.add_url_rule('/usuarios/<string:id>', 'status_usuario', usuario_controller.s
 app.add_url_rule('/usuarios/<string:id>', 'buscar_usuario', usuario_controller.buscar_usuario, methods=['GET'])
 app.add_url_rule('/register', 'register', auth_controller.register, methods=['POST'])
 app.add_url_rule('/login', 'login', auth_controller.login, methods=['POST'])
+app.add_url_rule('/refresh', 'refresh_token', auth_controller.refresh_token, methods=['POST'])
 app.add_url_rule('/reset-password', 'reset_password_request', auth_controller.reset_password_request, methods=['POST'])
 app.add_url_rule('/login/google', 'login_google', auth_controller.login_google, methods=['GET'])
 app.add_url_rule('/login/google/callback', 'authorize_google', auth_controller.authorize_google)

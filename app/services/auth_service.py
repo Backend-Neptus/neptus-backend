@@ -1,10 +1,9 @@
-from flask_jwt_extended import create_access_token
 from app import db
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
 from app.models.usuario_model import Usuario
-from app.utils import default_perfil, reset_password
+from app.utils import default_perfil, reset_password, create_token
 
 
 class AuthService:
@@ -24,7 +23,12 @@ class AuthService:
     db.session.add(usuario)
     db.session.commit()
 
-    return "Usuário cadastrado com sucesso!"
+    return {
+        'messagem': "Usuário cadastrado com sucesso",
+        'access_token': create_token.create_token(id=usuario.id,
+                                                  nome=usuario.nome),
+        'refresh_token': create_token.refresh_token(id=usuario.id)
+    }
 
   def login(self, email: str, senha: str):
     usuario = Usuario.query.filter_by(email=email).first()
@@ -42,7 +46,11 @@ class AuthService:
     if not usuario.verificar_senha(senha):
       raise InvalidCredentialsError("Email ou senha inválidos")
 
-    return create_access_token(identity=str(usuario.id))
+    return {
+        'access_token': create_token.create_token(id=usuario.id,
+                                                  nome=usuario.nome),
+        'refresh_token': create_token.refresh_token(id=usuario.id)
+    }
 
   def authorize_google(self, nome: str, email: str):
     usuario = Usuario.query.filter_by(email=email).first()
@@ -62,9 +70,13 @@ class AuthService:
     if not usuario.google_login:
       raise GoogleLoginRequestError("Usuário não cadastrado via Google")
 
-    return create_access_token(identity=str(usuario.id))
+    return {
+        'access_token': create_token.create_token(id=usuario.id,
+                                                  nome=usuario.nome),
+        'refresh_token': create_token.refresh_token(id=usuario.id)
+    }
 
-  def recuperar_senha(self, email):
+  def recuperar_senha(self, email: str):
     usuario = Usuario.query.filter_by(email=email).first()
 
     if not usuario:
@@ -82,3 +94,12 @@ class AuthService:
 
     reset_password.enviar_senha(email, nova_senha, usuario.nome)
     return "Nova senha enviada para o e-mail"
+
+  def refresh_token(self, user_id: str):
+    usuario = Usuario.query.get(user_id)
+    if not usuario:
+      raise NotFoundRequestError("Usuário nao encontrado")
+    if not usuario.is_active:
+      raise UserDisabledError("Usuário desativado")
+    refresh_token = create_token.create_token(usuario.id, usuario.nome)
+    return refresh_token
