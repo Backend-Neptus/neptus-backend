@@ -41,6 +41,7 @@ def login_required(func):
 
             return func(*args, **kwargs)
         except Exception as e:
-            return jsonify({'erro': 'Token inválido ou ausente'}), 401
+            print("Exception:", e)
+            return jsonify({'erro': 'Token inválido ou ausente', 'detalhes': str(e)}), 401
 
     return wrapper

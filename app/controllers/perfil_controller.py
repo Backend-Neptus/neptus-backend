@@ -196,3 +196,27 @@ def deletar_perfil(id):
     return jsonify({'erro': e.message}), 404
   except BadRequestError as e:
     return jsonify({'erro': e.message}), 400
+
+
+def buscar_perfil(id):
+  """
+      Busca um perfil existente.
+      ---
+      tags:
+        - Perfil
+      parameters:
+        - in: path
+          name: id
+          required: true
+          type: string  # Alterado de integer para string (UUID)
+          example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
+      responses:
+        200:
+          description: Perfil encontrado com sucesso!
+        404:
+          description: Perfil nao encontrado
+    """
+  try:
+    return jsonify(PerfilService.buscar_perfil(id).to_dict()), 200
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404

@@ -40,8 +40,10 @@ class PerfilService:
         "id": perfil.id,
         "nome": perfil.nome,
         "permissoes": perfil.permissoes,
-        "usuarios": len(perfil.usuarios)
-    } for perfil in Perfil.query.all()]
+        "usuarios": len(perfil.usuarios),
+        "created_at": perfil.created_at.strftime('%d/%m/%Y %H:%M:%S'),
+        "updated_at": perfil.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+    } for perfil in Perfil.query.order_by(Perfil.created_at).all()]
 
   def atualizar_perfil(id, nome, permissoes):
     perfil = Perfil.query.filter_by(id=id).first()
@@ -100,3 +102,11 @@ class PerfilService:
     db.session.commit()
 
     return "perfil deletado com sucesso! todos os usuarios foram transferidos para o perfil default"
+  
+  def buscar_perfil(id):
+    perfil = Perfil.query.filter_by(id=id).first()
+
+    if not perfil:
+      raise NotFoundRequestError("Perfil nao encontrado")
+
+    return perfil

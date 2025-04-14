@@ -53,8 +53,12 @@ def salvar_usuario():
     email = data.get('email')
     senha = data.get('senha')
     perfil_id = data.get('perfil_id')
-    return jsonify(
-        UsuarioService.registrar_usuario(nome, email, senha, perfil_id)), 201
+    return jsonify({
+        'messagem':
+        'Usuário cadastrado com sucesso',
+        'data':
+        UsuarioService.registrar_usuario(nome, email, senha, perfil_id).to_dict()
+    }), 201
   except BadRequestError as e:
     return jsonify({"erro": e.message}), 400
   except ConflictRequestError as e:
@@ -75,19 +79,7 @@ def listar_usuarios():
       200:
         description: Lista de usuários
     """
-  usuarios = Usuario.query.all()
-  resultado = []
-
-  for usuario in usuarios:
-    resultado.append({
-        'id': usuario.id,
-        'nome': usuario.nome,
-        'email': usuario.email,
-        'perfil_id': usuario.perfil_id,
-        'perfil_nome': usuario.perfil.nome
-    })
-
-  return jsonify(resultado), 200
+  return jsonify(UsuarioService.listar_usuarios()), 200
 
 
 @login_required
@@ -129,26 +121,76 @@ def atualizar_usuario(id):
         description: Usuário não encontrado
 """
 
-  usuario = Usuario.query.get(id)
-
-  if not usuario:
-    return jsonify({"erro": "Usuário não encontrado"}), 404
-
   data = request.get_json()
 
-  if 'nome' in data:
-    usuario.nome = data['nome']
-  if 'email' in data:
-    usuario.email = data['email']
-  if 'senha' in data:
-    usuario.set_senha(data['senha'])
-  if 'perfil_id' in data:
-    # Verifica se o perfil existe antes de atualizar
-    perfil = Perfil.query.get(data['perfil_id'])
-    if not perfil:
-      return jsonify({'erro': 'Perfil não encontrado'}), 404
-    usuario.perfil_id = data['perfil_id']
+  try:
+    return jsonify({
+        "mensagem":
+        "Usuário atualizado com sucesso!",
+        "data":
+        UsuarioService.atualizar_usuario(id, data['nome'], data['email'],
+                                         data['perfil_id']).to_dict()
+    }), 200
+  except BadRequestError as e:
+    return jsonify({"erro": e.message}), 400
+  except ConflictRequestError as e:
+    return jsonify({"erro": e.message}), 409
+  except NotFoundRequestError as e:
+    return jsonify({"erro": e.message}), 404
 
-  db.session.commit()
-
-  return jsonify({"mensagem": "Usuário atualizado com sucesso!"}), 200
+@login_required
+@permission_required(PermissionEnum.USUARIO_EDITAR)
+def status_usuario(id):
+  """
+    Ativar/Desativa um usuário existente.
+    ---
+    tags:
+      - Usuários
+    parameters:
+      - in: path
+        name: id
+        required: true
+        type: string  # Mudado de integer para string (UUID)
+        example: "51b03e1a-f849-438e-951a-f19a27b35902"  
+    responses:
+      200:
+        description: Usuário ativado/desativado com sucesso!
+      404:
+        description: Usuário nao encontrado
+  """
+  data = request.get_json()
+  try:
+    usuario = UsuarioService.status_usuario(id, data['status'])
+    return jsonify({
+        "mensagem":
+        f"Usuário {'ativado' if usuario.is_active else 'desativado'} com sucesso!",
+        "data":
+        usuario.to_dict()
+    }), 200
+    
+  except NotFoundRequestError as e:
+    return jsonify({"erro": e.message}), 404
+@login_required
+@permission_required(PermissionEnum.USUARIO_DETALHAR)
+def buscar_usuario(id):
+  """
+    Busca um usuário existente.
+    ---
+    tags:
+      - Usuários
+    parameters:
+      - in: path
+        name: id
+        required: true
+        type: string  # Mudado de integer para string (UUID)
+        example: "51b03e1a-f849-438e-951a-f19a27b35902"  
+    responses:
+      200:
+        description: Usuário encontrado com sucesso!
+      404:
+        description: Usuário nao encontrado
+  """
+  try:
+    return jsonify(UsuarioService.buscar_usuario(id).to_dict()), 200
+  except NotFoundRequestError as e:
+    return jsonify({"erro": e.message}), 404
