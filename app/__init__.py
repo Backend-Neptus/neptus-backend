@@ -36,9 +36,9 @@ mail = Mail(app)
 # FLASK DB MIGRATE -M "MESSAGE TEXT"
 # FLASK DB UPGRADE
 # CUIDADO AO FAZER MIGRATE 
-from app.models import Sensor, Turbidez, Perfil, Usuario
+from app.models import Sensor, Turbidez, Perfil, Usuario, Propriedade
 
-from app.controllers import turbidez_controller, perfil_controller, usuario_controller, auth_controller
+from app.controllers import turbidez_controller, perfil_controller, usuario_controller, auth_controller, propriedade_controller
 
 app.add_url_rule('/leitura/turbidez', 'salvar_turbidez', turbidez_controller.salvar_turbidez, methods=['POST'])
 app.add_url_rule('/perfil', 'salvar_perfil', perfil_controller.salvar_perfil, methods=['POST'])
@@ -57,6 +57,11 @@ app.add_url_rule('/refresh', 'refresh_token', auth_controller.refresh_token, met
 app.add_url_rule('/reset-password', 'reset_password_request', auth_controller.reset_password_request, methods=['POST'])
 app.add_url_rule('/login/google', 'login_google', auth_controller.login_google, methods=['GET'])
 app.add_url_rule('/login/google/callback', 'authorize_google', auth_controller.authorize_google)
+app.add_url_rule('/propriedade', 'cadastrar_propriedade', propriedade_controller.cadastrar_propriedade, methods=['POST'])
+app.add_url_rule('/propriedade', 'listar_propriedades', propriedade_controller.listar_propriedades, methods=['GET'])
+app.add_url_rule('/propriedade/<string:id>', 'atualizar_propriedade', propriedade_controller.atualizar_propriedade, methods=['PUT'])
+app.add_url_rule('/propriedade/<string:id>', 'detalhar_propriedade', propriedade_controller.detalhar_propriedade, methods=['GET'])
+
 
 
 @app.route('/')

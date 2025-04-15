@@ -32,18 +32,7 @@ class UsuarioService():
     return usuario
 
   def listar_usuarios():
-    return [{
-        'id': usuario.id,
-        'nome': usuario.nome,
-        'email': usuario.email,
-        'perfil_id': usuario.perfil_id,
-        'perfil_nome': usuario.perfil.nome,
-        'is_admin': usuario.is_admin,
-        'is_active': usuario.is_active,
-        'google_login': usuario.google_login,
-        'created_at': usuario.updated_at.strftime('%d/%m/%Y %H:%M:%S'),
-        'updated_at': usuario.updated_at.strftime('%d/%m/%Y %H:%M:%S')
-    } for usuario in Usuario.query.order_by(Usuario.created_at).all()]
+    return [usuario.to_dict() for usuario in Usuario.query.order_by(Usuario.created_at).all()]
 
   def atualizar_usuario(id: str, nome: str, email: str, perfil_id: str):
     if (not nome) or (not email) or (not perfil_id):

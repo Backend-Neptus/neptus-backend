@@ -3,6 +3,7 @@ import uuid
 from app import db
 from werkzeug.security import generate_password_hash, check_password_hash
 from sqlalchemy.dialects.postgresql import UUID
+from app.models.propriedade_model import propriedade_usuarios
 
 
 class Usuario(db.Model):
@@ -21,6 +22,7 @@ class Usuario(db.Model):
 
   created_at = db.Column(db.DateTime, default=datetime.utcnow)
   updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+  propriedades = db.relationship('Propriedade', secondary='propriedade_usuarios', back_populates='usuarios')
 
   def set_senha(self, senha):
     self.senha_hash = generate_password_hash(senha)
@@ -29,6 +31,20 @@ class Usuario(db.Model):
     return check_password_hash(self.senha_hash, senha)
 
   def to_dict(self):
+    return {
+        'id': self.id,
+        'nome': self.nome,
+        'email': self.email,
+        'google_login': self.google_login,
+        'is_admin': self.is_admin,
+        'is_active': self.is_active,
+        'perfil_id': self.perfil_id,
+        'total_propriedades': len(self.propriedades),
+        'propridedade': [propriedade.to_dict() for propriedade in self.propriedades],
+        'created_at': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
+        'updated_at': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+    }
+  def usuarios_to_dict(self):
     return {
         'id': self.id,
         'nome': self.nome,
