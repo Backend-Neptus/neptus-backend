@@ -338,10 +338,9 @@ def relatorio_usuarios():
   ano_atual = "2025"
   rendered_html = render_template_string(template, usuarios=usuarios, data_emissao=data_emissao, ano_atual=ano_atual, empresa=empresa, usuario=usuario)
   
-  wkhtmltopdf_path = r'C:\Program Files\wkhtmltopdf\bin\wkhtmltopdf.exe'
-  config = pdfkit.configuration(wkhtmltopdf=wkhtmltopdf_path)
+
   # Gerando o PDF com pdfkit
-  pdf = pdfkit.from_string(rendered_html, False, configuration=config)
+  pdf = pdfkit.from_string(rendered_html, False)
   uuid_str = str(uuid.uuid4())
   # Retornando o PDF como resposta
   response = make_response(pdf)
