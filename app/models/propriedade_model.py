@@ -40,3 +40,10 @@ class Propriedade(db.Model):
         'created_at': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
         'updated_at': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
     }
+  def to_dict_my_propriedades(self, usuario_id):
+    if self.proprietario_id != usuario_id:
+        return {}  # Retorna um dicionário vazio se os IDs não coincidirem
+    return {
+        "proprietario_id": self.proprietario_id,
+        "propriedade_nome": self.nome,
+    }

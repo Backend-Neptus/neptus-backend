@@ -51,6 +51,7 @@ app.add_url_rule('/usuarios', 'listar_usuarios', usuario_controller.listar_usuar
 app.add_url_rule('/usuarios/<string:id>', 'atualizar_usuario', usuario_controller.atualizar_usuario, methods=['PUT'])
 app.add_url_rule('/usuarios/<string:id>', 'status_usuario', usuario_controller.status_usuario, methods=['PATCH'])
 app.add_url_rule('/usuarios/<string:id>', 'buscar_usuario', usuario_controller.buscar_usuario, methods=['GET'])
+app.add_url_rule('/usuarios/relatorio', 'relatorio_usuarios', usuario_controller.relatorio_usuarios, methods=['GET'])
 app.add_url_rule('/register', 'register', auth_controller.register, methods=['POST'])
 app.add_url_rule('/login', 'login', auth_controller.login, methods=['POST'])
 app.add_url_rule('/refresh', 'refresh_token', auth_controller.refresh_token, methods=['POST'])

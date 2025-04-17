@@ -39,8 +39,12 @@ class Usuario(db.Model):
         'is_admin': self.is_admin,
         'is_active': self.is_active,
         'perfil_id': self.perfil_id,
+        'perfil': self.perfil.to_dict().get('nome'),
         'total_propriedades': len(self.propriedades),
         'propridedade': [propriedade.to_dict() for propriedade in self.propriedades],
+        'propriedades': [
+            propriedade.to_dict_my_propriedades(self.id) for propriedade in self.propriedades
+        ],
         'created_at': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
         'updated_at': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
     }
