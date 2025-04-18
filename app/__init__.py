@@ -61,6 +61,8 @@ app.add_url_rule('/propriedade', 'cadastrar_propriedade', propriedade_controller
 app.add_url_rule('/propriedade', 'listar_propriedades', propriedade_controller.listar_propriedades, methods=['GET'])
 app.add_url_rule('/propriedade/<string:id>', 'atualizar_propriedade', propriedade_controller.atualizar_propriedade, methods=['PUT'])
 app.add_url_rule('/propriedade/<string:id>', 'detalhar_propriedade', propriedade_controller.detalhar_propriedade, methods=['GET'])
+app.add_url_rule('/propriedade/usuarios/adicionar', 'adicionar_usuario', propriedade_controller.adicionar_usuario, methods=['POST'])
+app.add_url_rule('/propriedade/usuarios/remover', 'remover_usuario', propriedade_controller.remover_usuario, methods=['POST'])
 
 
 
