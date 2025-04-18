@@ -1,6 +1,6 @@
 from functools import wraps
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
-from flask import jsonify
+from flask import g, jsonify
 from app.models.usuario_model import Usuario 
 
 def permission_required(permissao):
@@ -8,8 +8,7 @@ def permission_required(permissao):
         @wraps(func)
         @jwt_required()
         def decorator(*args, **kwargs):
-            usuario_id = get_jwt_identity()
-            usuario = Usuario.query.get(usuario_id)
+            usuario = g.usuario
 
             if not usuario or not usuario.perfil:
                 return jsonify({'erro': 'Usuário sem perfil'}), 403
@@ -30,12 +29,10 @@ def login_required(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
         try:
-            verify_jwt_in_request()
-            usuario_id = get_jwt_identity()
-            usuario = Usuario.query.get(usuario_id)
+            usuario = carregar_usuario_logado()
 
             if not usuario:
-                return jsonify({'erro': 'Usuário não encontrado'}), 404
+                return jsonify({'erro': 'Usuário não encontrado, logue novamente'}), 404
             if not usuario.is_active:
                 return jsonify({'erro': 'Seu usuário foi desativado'}), 401
 
@@ -45,3 +42,16 @@ def login_required(func):
             return jsonify({'erro': 'Token inválido ou ausente', 'detalhes': str(e)}), 401
 
     return wrapper
+
+def carregar_usuario_logado():
+    try:
+        verify_jwt_in_request(optional=True)
+        usuario_id = get_jwt_identity()
+        if usuario_id:
+            g.usuario = Usuario.query.get(usuario_id)
+            return g.usuario
+            
+        else:
+            g.usuario = None
+    except Exception as e:
+        g.usuario = None

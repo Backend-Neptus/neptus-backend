@@ -5,6 +5,7 @@ from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
 from app.services.propriedade_service import PropriedadeService
+from app.utils.permissoes import login_required
 
 
 def cadastrar_propriedade():
@@ -178,7 +179,8 @@ responses:
     return jsonify({'erro': e.message}), 404
   except BadRequestError as e:
     return jsonify({'erro': e.message}), 404
-  
+
+
 def detalhar_propriedade(id):
   """
   Detalha uma propriedade.
@@ -203,6 +205,88 @@ def detalhar_propriedade(id):
             updated_at: "14/04/2025 12:00:00"
   """
   try:
-    return jsonify({'data': PropriedadeService().detalhar_propriedade(id).to_dict()}), 200
+    return jsonify(
+        {'data': PropriedadeService().detalhar_propriedade(id).to_dict()}), 200
   except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404    
+    return jsonify({'erro': e.message}), 404
+
+
+@login_required
+def adicionar_usuario():
+  """
+  Adiciona um usuario a uma propriedade.
+  ---
+  tags:
+    - Propriedade
+  responses:
+    200:
+      description: Usuario adicionado a propriedade
+      examples:
+        application/json:
+          mensagem: Usuario adicionado a propriedade
+  """
+  data = request.get_json()
+  id_propriedade = data.get('propriedade_id')
+  id_usuario = data.get('usuario_id')
+  try:
+    return jsonify({
+        'mensagem':
+        "Usuario adicionado a propriedade",
+        'data':
+        PropriedadeService().adicionar_usuario(id_propriedade,
+                                               id_usuario).to_dict()
+    }), 200
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404
+  except BadRequestError as e:
+    return jsonify({
+        'erro': "Erro inesperado no servidor",
+        'detalhes': str(e)
+    }), 403
+  except ConflictRequestError as e:
+    return jsonify({'erro': e.message}), 409
+  except Exception as e:
+    return jsonify({
+        'erro': "Erro inesperado no servidor",
+        'detalhes': str(e)
+    }), 500
+
+@login_required
+def remover_usuario():
+  """
+  Remove um usuario de uma propriedade.
+  ---
+  tags:
+    - Propriedade
+  responses:
+    200:
+      description: Usuario removido da propriedade
+      examples:
+        application/json:
+          mensagem: Usuario removido da propriedade
+  """
+  data = request.get_json()
+  id_propriedade = data.get('propriedade_id')
+  id_usuario = data.get('usuario_id')
+  try:
+    return jsonify({
+        'mensagem':
+        "Usuario removido da propriedade",
+        'data':
+        PropriedadeService().remover_usuario(id_propriedade,
+                                               id_usuario).to_dict()
+    }), 200
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404
+  except BadRequestError as e:
+    return jsonify({
+        'erro': "Erro inesperado no servidor",
+        'detalhes': str(e)
+    }), 403
+  except ConflictRequestError as e:
+    return jsonify({'erro': e.message}), 409
+  except Exception as e:
+    return jsonify({
+        'erro': "Erro inesperado no servidor",
+        'detalhes': str(e)
+    }), 500
