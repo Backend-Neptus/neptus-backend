@@ -19,6 +19,8 @@ class Usuario(db.Model):
 
   perfil_id = db.Column(UUID(as_uuid=True), db.ForeignKey('perfil.id'), nullable=False)
   perfil = db.relationship('Perfil', back_populates='usuarios')
+  
+  tanques = db.relationship('Tanque', back_populates='usuario')
 
   created_at = db.Column(db.DateTime, default=datetime.utcnow)
   updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)

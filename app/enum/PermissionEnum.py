@@ -36,10 +36,11 @@ class PermissionEnum(enum.Enum):
     SENSOR_EDITAR = "sensor_editar"
     SENSOR_EXCLUIR = "sensor_excluir"
 
-    # Permissões para leituras
+   # Permissões para leituras
     LEITURA_LISTAR = "leitura_listar"
     LEITURA_DETALHAR = "leitura_detalhar"
-    LEITURA_POR_TANQUE = "leitura_por_tanque"
-    LEITURA_POR_SENSOR = "leitura_por_sensor"
     LEITURA_CRIAR = "leitura_criar"
+    LEITURA_EDITAR = "leitura_editar"
     LEITURA_EXCLUIR = "leitura_excluir"
+    LEITURA_POR_TANQUE = "leitura_por_tanque"  # implementação futura
+    LEITURA_POR_SENSOR = "leitura_por_sensor"  # implementação futura

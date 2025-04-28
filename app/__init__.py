@@ -36,9 +36,9 @@ mail = Mail(app)
 # FLASK DB MIGRATE -M "MESSAGE TEXT"
 # FLASK DB UPGRADE
 # CUIDADO AO FAZER MIGRATE 
-from app.models import Sensor, Turbidez, Perfil, Usuario, Propriedade
+from app.models import Sensor, Turbidez, Perfil, Usuario, Propriedade, Tanque, Leitura
 
-from app.controllers import turbidez_controller, perfil_controller, usuario_controller, auth_controller, propriedade_controller
+from app.controllers import turbidez_controller, perfil_controller, usuario_controller, auth_controller, propriedade_controller, tanque_controller, leitura_controller, sensor_controller
 
 app.add_url_rule('/leitura/turbidez', 'salvar_turbidez', turbidez_controller.salvar_turbidez, methods=['POST'])
 app.add_url_rule('/perfil', 'salvar_perfil', perfil_controller.salvar_perfil, methods=['POST'])
@@ -63,6 +63,21 @@ app.add_url_rule('/propriedade/<string:id>', 'atualizar_propriedade', propriedad
 app.add_url_rule('/propriedade/<string:id>', 'detalhar_propriedade', propriedade_controller.detalhar_propriedade, methods=['GET'])
 app.add_url_rule('/propriedade/usuarios/adicionar', 'adicionar_usuario', propriedade_controller.adicionar_usuario, methods=['POST'])
 app.add_url_rule('/propriedade/usuarios/remover', 'remover_usuario', propriedade_controller.remover_usuario, methods=['POST'])
+app.add_url_rule('/tanque', 'cadastrar_tanque', tanque_controller.cadastrar_tanque, methods=['POST'])
+app.add_url_rule('/tanque', 'listar_tanques', tanque_controller.listar_tanques, methods=['GET'])
+app.add_url_rule('/tanque/<string:id>', 'detalhar_tanque', tanque_controller.detalhar_tanque, methods=['GET'])
+app.add_url_rule('/tanque/<string:id>', 'atualizar_tanque', tanque_controller.atualizar_tanque, methods=['PUT'])
+app.add_url_rule('/tanque/<string:id>', 'deletar_tanque', tanque_controller.deletar_tanque, methods=['DELETE'])
+app.add_url_rule('/leituras', 'criar_leitura', leitura_controller.criar_leitura, methods=['POST'])
+app.add_url_rule('/leituras', 'listar_leituras', leitura_controller.listar_leituras, methods=['GET'])
+app.add_url_rule('/leituras/<string:id>', 'detalhar_leitura', leitura_controller.detalhar_leitura, methods=['GET'])
+app.add_url_rule('/leituras/<string:id>', 'atualizar_leitura', leitura_controller.atualizar_leitura, methods=['PUT'])
+app.add_url_rule('/leituras/<string:id>', 'deletar_leitura', leitura_controller.deletar_leitura, methods=['DELETE'])
+app.add_url_rule('/sensores', 'criar_sensor', sensor_controller.criar_sensor, methods=['POST'])
+app.add_url_rule('/sensores', 'listar_sensores', sensor_controller.listar_sensores, methods=['GET'])
+app.add_url_rule('/sensores/<string:sensor_id>', 'obter_sensor', sensor_controller.obter_sensor, methods=['GET'])
+app.add_url_rule('/sensores/<string:sensor_id>', 'atualizar_sensor', sensor_controller.atualizar_sensor, methods=['PUT'])
+app.add_url_rule('/sensores/<string:sensor_id>', 'deletar_sensor', sensor_controller.deletar_sensor, methods=['DELETE'])
 
 
 
