@@ -54,6 +54,7 @@ class AuthService:
     }
 
   def authorize_google(self, nome: str, email: str):
+    
     usuario = Usuario.query.filter_by(email=email).first()
 
     if not usuario:
