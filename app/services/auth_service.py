@@ -72,7 +72,7 @@ class AuthService:
       raise GoogleLoginRequestError("Usuário não cadastrado via Google")
 
     return {
-        'messagem': "Usuário cadastrado com sucesso",
+        'mensagem': "Usuário cadastrado com sucesso",
         'email': email,
         'nome': nome,
         'access_token': create_token.create_token(id=usuario.id,
