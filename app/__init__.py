@@ -59,7 +59,7 @@ app.add_url_rule('/refresh', 'refresh_token', auth_controller.refresh_token, met
 app.add_url_rule('/forgot-password', 'reset_password_request', auth_controller.reset_password_request, methods=['POST'])
 app.add_url_rule('/reset-password', 'reset_password', auth_controller.reset_password, methods=['POST'])
 # app.add_url_rule('/login/google', 'login_google', auth_controller.login_google, methods=['GET']) DESATIVADO, RESPONSABILIDADE DO FRONTEND PARA FAZER O LOGIN
-app.add_url_rule('/login/google', 'authorize_google', auth_controller.authorize_google)
+app.add_url_rule('/login/google', 'authorize_google', auth_controller.authorize_google,  methods=['POST'])
 app.add_url_rule('/propriedade', 'cadastrar_propriedade', propriedade_controller.cadastrar_propriedade, methods=['POST'])
 app.add_url_rule('/propriedade', 'listar_propriedades', propriedade_controller.listar_propriedades, methods=['GET'])
 app.add_url_rule('/propriedade/<string:id>', 'atualizar_propriedade', propriedade_controller.atualizar_propriedade, methods=['PUT'])

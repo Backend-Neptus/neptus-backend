@@ -1,6 +1,7 @@
 from flask import request, jsonify, url_for
 from flask_jwt_extended import get_jwt_identity, jwt_required
-from app import google
+from google.oauth2 import id_token
+from google.auth.transport import requests
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
@@ -116,19 +117,19 @@ def login():
   except InvalidCredentialsError as e:
     return jsonify({"erro": e.message}), 401
 
-
-def login_google():
-  """
-    Inicia o processo de login com o Google.
-    ---
-    tags:
-      - Autenticação
-    responses:
-      302:
-        description: Redireciona para o login do Google
-    """
-  redirect_uri = url_for('authorize_google', _external=True)
-  return google.authorize_redirect(redirect_uri)
+# RESPONSABILIDA DO FRONTEND
+# def login_google():
+#   """
+#     Inicia o processo de login com o Google.
+#     ---
+#     tags:
+#       - Autenticação
+#     responses:
+#       302:
+#         description: Redireciona para o login do Google
+#     """
+#   redirect_uri = url_for('authorize_google', _external=True)
+#   return google.authorize_redirect(redirect_uri)
 
 
 def authorize_google():
@@ -154,7 +155,7 @@ def authorize_google():
     CLIENT_ID_GOOGLE = '18188128770-tpbogkb7i4f99c3o6701e2r25ap4jtes.apps.googleusercontent.com'
     dados = request.get_json()
     token_google = dados['token_google']
-    idinfo = google.id_token.verify_oauth2_token(token_google, google.auth.transport.requests.Request(), CLIENT_ID_GOOGLE)
+    idinfo = idinfo = id_token.verify_oauth2_token(token_google, requests.Request(), CLIENT_ID_GOOGLE)
     email = idinfo['email']
     nome = idinfo['name']
     return jsonify(AuthService().authorize_google(nome, email)), 200
