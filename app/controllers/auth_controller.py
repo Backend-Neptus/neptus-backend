@@ -149,19 +149,23 @@ def authorize_google():
           application/json:
             erro: Usuário desativado ou não cadastrado via Google
   """
-  CLIENT_ID_GOOGLE = '18188128770-tpbogkb7i4f99c3o6701e2r25ap4jtes.apps.googleusercontent.com'
-  dados = request.get_json()
-  token_google = dados['token_google']
-  idinfo = google.id_token.verify_oauth2_token(token_google, google.auth.transport.requests.Request(), CLIENT_ID_GOOGLE)
-  email = idinfo['email']
-  nome = idinfo['name']
+
   try:
+    CLIENT_ID_GOOGLE = '18188128770-tpbogkb7i4f99c3o6701e2r25ap4jtes.apps.googleusercontent.com'
+    dados = request.get_json()
+    token_google = dados['token_google']
+    idinfo = google.id_token.verify_oauth2_token(token_google, google.auth.transport.requests.Request(), CLIENT_ID_GOOGLE)
+    email = idinfo['email']
+    nome = idinfo['name']
     return jsonify(AuthService().authorize_google(nome, email)), 200
   except UserDisabledError as e:
     return jsonify({'erro': e.message}), 403
   except GoogleLoginRequestError as e:
     return jsonify({'erro': e.message}), 403
-
+  except ValueError as e:
+      return jsonify({"error": f"Token inválido: {str(e)}"}), 400
+  except Exception as e:
+      return jsonify({"error": f"Erro interno: {str(e)}"}), 500
 
 def reset_password_request():
   """
