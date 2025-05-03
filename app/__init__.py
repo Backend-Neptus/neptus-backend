@@ -6,11 +6,12 @@ from flasgger import Swagger
 from flask_migrate import Migrate
 from authlib.integrations.flask_client import OAuth
 from flask_mail import Mail
+from flask_cors import CORS
 
 app = Flask(__name__)
 app.config.from_object(Config)
 swagger = Swagger(app)
-
+CORS(app)
 oauth = OAuth(app)
 
 google = oauth.register(
