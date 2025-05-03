@@ -1,3 +1,4 @@
+from itsdangerous import URLSafeTimedSerializer
 from app import db
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
@@ -71,6 +72,9 @@ class AuthService:
       raise GoogleLoginRequestError("Usuário não cadastrado via Google")
 
     return {
+        'messagem': "Usuário cadastrado com sucesso",
+        'email': email,
+        'nome': nome,
         'access_token': create_token.create_token(id=usuario.id,
                                                   nome=usuario.nome),
         'refresh_token': create_token.refresh_token(id=usuario.id)
@@ -78,6 +82,9 @@ class AuthService:
 
   def recuperar_senha(self, email: str):
     usuario = Usuario.query.filter_by(email=email).first()
+
+    s = URLSafeTimedSerializer("secret_key")
+    token_reset = s.dumps(email, salt="salt_key")
 
     if not usuario:
       raise NotFoundRequestError("E-mail não encontrado")
@@ -88,12 +95,8 @@ class AuthService:
     if usuario.google_login:
       raise GoogleLoginRequestError("Usuário cadastrado via Google")
 
-    nova_senha = reset_password.gerar_nova_senha()
-    usuario.set_senha(nova_senha)
-    db.session.commit()
-
-    reset_password.enviar_senha(email, nova_senha, usuario.nome)
-    return "Nova senha enviada para o e-mail"
+    reset_password.enviar_senha(email, token_reset, usuario.nome)
+    return "Caso exista uma conta cadastrada com este e-mail, um link para redefinir a senha foi enviado."
 
   def refresh_token(self, user_id: str):
     usuario = Usuario.query.get(user_id)
@@ -103,3 +106,17 @@ class AuthService:
       raise UserDisabledError("Usuário desativado")
     refresh_token = create_token.create_token(usuario.id, usuario.nome)
     return refresh_token
+
+  def resetar_senha(self, token_reset: str, senha: str):
+    s = URLSafeTimedSerializer("secret_key")
+    email = s.loads(token_reset, salt="salt_key", max_age=3600)
+    usuario = Usuario.query.filter_by(email=email).first()
+    if not usuario:
+      raise NotFoundRequestError("E-mail nao encontrado")
+    if not usuario.is_active:
+      raise UserDisabledError("Usuário desativado")
+    if usuario.google_login:
+      raise GoogleLoginRequestError("Usuário cadastrado via Google")
+    usuario.set_senha(senha)
+    db.session.commit()
+    return "Senha redefinida com sucesso!"

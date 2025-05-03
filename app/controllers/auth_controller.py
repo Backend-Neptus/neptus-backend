@@ -106,7 +106,7 @@ def login():
   email = data.get('email')
   senha = data.get('senha')
   try:
-    return jsonify({'access_token': AuthService().login(email, senha)}), 200
+    return jsonify(AuthService().login(email, senha)), 200
   except NotFoundRequestError as e:
     return jsonify({"erro": e.message}), 401
   except UserDisabledError as e:
@@ -156,7 +156,7 @@ def authorize_google():
   email = user_info['email']
   nome = user_info.get('name', 'Usuário Google')
   try:
-    return jsonify({'token': AuthService().authorize_google(nome, email)}), 200
+    return jsonify(AuthService().authorize_google(nome, email)), 200
   except UserDisabledError as e:
     return jsonify({'erro': e.message}), 403
   except GoogleLoginRequestError as e:
@@ -209,8 +209,20 @@ def reset_password_request():
     return jsonify({"erro": str(e)}), 403
 
 
+def reset_password():
+  data = request.get_json()
+  token = data.get('token')
+  senha = data.get('senha')
+  try:
+    return jsonify({"mensagem": AuthService().resetar_senha(token, senha)}), 200
+  except NotFoundRequestError as e:
+    return jsonify({"erro": str(e)}), 404
+  except UserDisabledError as e:
+    return jsonify({"erro": str(e)}), 403
+  except GoogleLoginRequestError as e:
+    return jsonify({"erro": str(e)}), 403
+ 
 @jwt_required(refresh=True)
-
 def refresh_token():
   """
     Gera um novo token de acesso.
