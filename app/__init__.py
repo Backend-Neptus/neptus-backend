@@ -9,9 +9,10 @@ from flask_mail import Mail
 from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 app.config.from_object(Config)
 swagger = Swagger(app)
-CORS(app)
+
 oauth = OAuth(app)
 
 google = oauth.register(
