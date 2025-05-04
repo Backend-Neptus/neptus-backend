@@ -12,6 +12,7 @@ from app.enum.PermissionEnum import PermissionEnum
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
+from app.utils import pdfkit_config
 
 
 class UsuarioService():
@@ -172,25 +173,20 @@ class UsuarioService():
     </html>
     """
 
-    # Renderizar o template com os dados dos usuários
+
     template = Template(html_template)
     html_renderizado = template.render(usuarios=usuarios)
 
-    # Configuração do wkhtmltopdf
-    config = pdfkit.configuration(wkhtmltopdf='C:\\Program Files\\wkhtmltopdf\\bin\\wkhtmltopdf.exe')
+    config = pdfkit_config.get_pdfkit_config()
 
-    # Criar um arquivo temporário para armazenar o PDF
     with NamedTemporaryFile(delete=False, suffix=".pdf") as temp_pdf:
         temp_pdf_path = temp_pdf.name
         pdfkit.from_string(html_renderizado, temp_pdf_path, configuration=config)
 
-    # Abrir o arquivo PDF gerado para leitura
     with open(temp_pdf_path, 'rb') as f:
         pdf_data = f.read()
 
-    # Remover o arquivo temporário após leitura
     os.remove(temp_pdf_path)
 
-    # Retornar o PDF gerado como resposta HTTP
     return Response(pdf_data, content_type='application/pdf',
                     headers={"Content-Disposition": "attachment; filename=relatorio_usuarios.pdf"})
