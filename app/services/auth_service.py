@@ -50,11 +50,20 @@ class AuthService:
     return {
         'access_token': create_token.create_token(id=usuario.id,
                                                   nome=usuario.nome),
-        'refresh_token': create_token.refresh_token(id=usuario.id)
+        'refresh_token': create_token.refresh_token(id=usuario.id),
+        'mensagem': "Login efetuado com sucesso",
+        'usuario': {
+            'id': usuario.id,
+            'nome': usuario.nome,
+            'email': usuario.email,
+            'perfil': usuario.perfil.nome,
+            'is_admin': usuario.is_admin,
+            'permissoes': usuario.perfil.permissoes
+        },
     }
 
   def authorize_google(self, nome: str, email: str):
-    
+
     usuario = Usuario.query.filter_by(email=email).first()
 
     if not usuario:
@@ -73,12 +82,18 @@ class AuthService:
       raise GoogleLoginRequestError("Usuário não cadastrado via Google")
 
     return {
-        'mensagem': "Usuário cadastrado com sucesso",
-        'email': email,
-        'nome': nome,
         'access_token': create_token.create_token(id=usuario.id,
                                                   nome=usuario.nome),
-        'refresh_token': create_token.refresh_token(id=usuario.id)
+        'refresh_token': create_token.refresh_token(id=usuario.id),
+        'mensagem': "Login efetuado com sucesso",
+        'usuario': {
+            'id': usuario.id,
+            'nome': usuario.nome,
+            'email': usuario.email,
+            'perfil': usuario.perfil.nome,
+            'is_admin': usuario.is_admin,
+            'permissoes': usuario.perfil.permissoes
+        },
     }
 
   def recuperar_senha(self, email: str):
