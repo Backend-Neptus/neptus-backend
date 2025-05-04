@@ -194,3 +194,6 @@ def buscar_usuario(id):
     return jsonify(UsuarioService.buscar_usuario(id).to_dict()), 200
   except NotFoundRequestError as e:
     return jsonify({"erro": e.message}), 404
+  
+def relatorio_usuarios():
+  return UsuarioService.relatorio_usuarios(), 200
