@@ -79,7 +79,9 @@ def listar_usuarios():
       200:
         description: Lista de usuários
     """
-  return jsonify(UsuarioService.listar_usuarios()), 200
+  page = request.args.get('page', 1, type=int)
+  per_page = request.args.get('per_page', 10, type=int)
+  return jsonify(UsuarioService.listar_usuarios(page, per_page)), 200
 
 
 @login_required

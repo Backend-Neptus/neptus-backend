@@ -37,8 +37,18 @@ class UsuarioService():
 
     return usuario
 
-  def listar_usuarios():
-    return [usuario.to_dict() for usuario in Usuario.query.order_by(Usuario.created_at).all()]
+  def listar_usuarios(page: int, per_page: int):
+    if per_page > 50:
+      per_page = 50
+    
+    usuario = Usuario.query.paginate(page=page, per_page=per_page, error_out=False)
+    return {
+        'total': usuario.total,
+        'pagina_atual': usuario.page,
+        'itens_por_pagina': usuario.per_page,
+        'total_paginas': usuario.pages,
+        'usuarios': [usuario.to_dict() for usuario in usuario]
+    }
 
   def atualizar_usuario(id: str, nome: str, email: str, perfil_id: str):
     if (not nome) or (not email) or (not perfil_id):
