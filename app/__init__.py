@@ -1,7 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask_jwt_extended import JWTManager
 from flask_sqlalchemy import SQLAlchemy
-from app.config.config import Config
+from app.config.app_config import APP_CONFIG
 from flasgger import Swagger
 from flask_migrate import Migrate
 from authlib.integrations.flask_client import OAuth
@@ -10,22 +10,10 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
-app.config.from_object(Config)
+app.config.from_object(APP_CONFIG)
 swagger = Swagger(app)
 
 oauth = OAuth(app)
-
-google = oauth.register(
-    name='google',
-    client_id='1002584745082-4dhdl28pa57em81klq5kp4ch97b8k5ru.apps.googleusercontent.com',
-    client_secret='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',
-    access_token_url='https://accounts.google.com/o/oauth2/token',
-    access_token_params=None,
-    authorize_url='https://accounts.google.com/o/oauth2/auth',
-    authorize_params={'access_type': 'offline', 'prompt': 'consent'},
-    api_base_url='https://www.googleapis.com/oauth2/v1/',
-    client_kwargs={'scope': 'email profile'},
-)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -67,7 +55,8 @@ app.add_url_rule('/propriedade/<string:id>', 'atualizar_propriedade', propriedad
 app.add_url_rule('/propriedade/<string:id>', 'detalhar_propriedade', propriedade_controller.detalhar_propriedade, methods=['GET'])
 app.add_url_rule('/propriedade/usuarios/adicionar', 'adicionar_usuario', propriedade_controller.adicionar_usuario, methods=['POST'])
 app.add_url_rule('/propriedade/usuarios/remover', 'remover_usuario', propriedade_controller.remover_usuario, methods=['POST'])
-
+app.add_url_rule('/propriedade/usuarios/convidar', 'convidar_usuario', propriedade_controller.convidar_usuario, methods=['POST'])
+app.add_url_rule('/propriedade/usuarios/convidar/aceitar', 'convite_aceito', propriedade_controller.convite_aceito, methods=['POST'])
 
 
 @app.route('/')

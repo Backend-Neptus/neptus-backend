@@ -1,7 +1,10 @@
 from datetime import datetime
+import select
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from app import db
+from app.exceptions.not_found_request_error import NotFoundRequestError
+from app.models.perfil_model import Perfil
 
 propriedade_usuarios = db.Table(
     'propriedade_usuarios',
@@ -40,3 +43,15 @@ class Propriedade(db.Model):
         'created_at': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
         'updated_at': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
     }
+  def __get_perfil_local(usuario_id, propriedade_id):
+      stmt = select(propriedade_usuarios.c.perfil_local).where(
+          propriedade_usuarios.c.usuario_id == usuario_id,
+          propriedade_usuarios.c.propriedade_id == propriedade_id
+      )
+      result = db.session.execute(stmt).scalar()
+      return result 
+  def get_perfil_local_obj(self, usuario_id, propriedade_id):
+    perfil_id = self.__get_perfil_local(usuario_id, propriedade_id)
+    if perfil_id:
+        return Perfil.query.get(perfil_id)
+    raise NotFoundRequestError("Perfil nao encontrado")

@@ -1,9 +1,6 @@
-from flask import request, jsonify, url_for
-from flask_jwt_extended import get_jwt_identity, jwt_required
-from app import google
+from flask import request, jsonify
 from app.exceptions import (BadRequestError, ConflictRequestError,
-                            UserDisabledError, GoogleLoginRequestError,
-                            NotFoundRequestError, InvalidCredentialsError)
+                            NotFoundRequestError)
 from app.services.propriedade_service import PropriedadeService
 from app.utils.permissoes import login_required
 
@@ -251,6 +248,7 @@ def adicionar_usuario():
         'detalhes': str(e)
     }), 500
 
+
 @login_required
 def remover_usuario():
   """
@@ -274,7 +272,7 @@ def remover_usuario():
         "Usuario removido da propriedade",
         'data':
         PropriedadeService().remover_usuario(id_propriedade,
-                                               id_usuario).to_dict()
+                                             id_usuario).to_dict()
     }), 200
   except NotFoundRequestError as e:
     return jsonify({'erro': e.message}), 404
@@ -283,6 +281,48 @@ def remover_usuario():
         'erro': "Erro inesperado no servidor",
         'detalhes': str(e)
     }), 403
+  except ConflictRequestError as e:
+    return jsonify({'erro': e.message}), 409
+  except Exception as e:
+    return jsonify({
+        'erro': "Erro inesperado no servidor",
+        'detalhes': str(e)
+    }), 500
+
+
+@login_required
+def convidar_usuario():
+  data = request.get_json()
+  id_propriedade = data.get('propriedade_id')
+  email = data.get('email')
+  try:
+    return jsonify({
+        'mensagem':
+        PropriedadeService().convidar_usuario(id_propriedade, email)
+    }), 200
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404
+  except BadRequestError as e:
+    return jsonify({'erro': e.message}), 404
+  except Exception as e:
+    return jsonify({
+        'erro': "Erro inesperado no servidor",
+        'detalhes': str(e)
+    }), 500
+
+
+def convite_aceito():
+  data = request.get_json()
+  token_convite = data.get('token_convite')
+  try:
+    return jsonify({
+        'mensagem':
+        PropriedadeService().convite_aceito(token_convite).to_dict()
+    }), 200
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404
+  except BadRequestError as e:
+    return jsonify({'erro': e.message}), 404
   except ConflictRequestError as e:
     return jsonify({'erro': e.message}), 409
   except Exception as e:

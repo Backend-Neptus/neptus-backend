@@ -4,7 +4,7 @@ from flask_mail import Message
 from app import mail
 from app.config.app_config import APP_CONFIG
 
-def enviar_convite(email_destino, token_convite, nome_propriedade=None, proprietario_nome=None, nome=None):
+def enviar_convite(email_destino, token_convite, nome_propriedade=None, usuario_request=None, nome=None):
     msg = Message(
         subject='Neptus • Convite de acesso',
         sender=("Neptus - Suporte", "neptus@cloudsyntax.com.br"),
@@ -18,10 +18,10 @@ def enviar_convite(email_destino, token_convite, nome_propriedade=None, propriet
             <h2 style="color: #0d6efd; text-align: center;">Neptus</h2>
             <p style="font-size: 16px; color: #333;">Olá, {nome}.</p>
             <p style="font-size: 16px; color: #333;">
-                Você foi convidado por {proprietario_nome} para se cadastrar e acessar a propriedade <strong>{nome_propriedade}</strong> no sistema <strong>Neptus</strong>.
+                Você foi convidado por {usuario_request} para se cadastrar e acessar a propriedade <strong>{nome_propriedade}</strong> no sistema <strong>Neptus</strong>.
             </p>
             <div style="background-color: #f8f9fa; padding: 15px; margin: 20px 0; border-radius: 5px; text-align: center; font-size: 20px; font-weight: bold; color: #212529;">
-                <a href="{APP_CONFIG.NEPTUS_URL}/propriedade/convite/{token_convite}" style="color: #0d6efd; text-decoration: none; word-break: break-all;">Cadastrar-se Agora</a>
+                <a href="{APP_CONFIG.NEPTUS_URL}/propriedade/convite/{token_convite}" style="color: #0d6efd; text-decoration: none; word-break: break-all;">Aceitar Convite</a>
             </div>
             <p style="font-size: 14px; color: #555;">
                 Caso não consiga acessar o link acima, copie e cole o link abaixo no seu navegador:
