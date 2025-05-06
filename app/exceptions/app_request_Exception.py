@@ -29,3 +29,13 @@ def handle_unexpected_exception(e):
         status=500
     )
     return jsonify(app_error.to_dict()), 500
+
+@app.errorhandler(Exception)
+def handle_signature_exception(e):
+
+    app_error = AppRequestError(
+        message="Sessão expirada, por favor faça login novamente.",
+        code=type(e).__name__, 
+        status=401
+    )
+    return jsonify(app_error.to_dict()), 401
