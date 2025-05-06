@@ -1,8 +1,10 @@
 from flask import request, jsonify
+from app.enum.PermissionEnum import PermissionEnum
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             NotFoundRequestError)
+from app.services.perfil_service import PerfilService
 from app.services.propriedade_service import PropriedadeService
-from app.utils.permissoes import login_required
+from app.utils.permissoes import login_required, permission_required
 
 
 def cadastrar_propriedade():
@@ -330,3 +332,33 @@ def convite_aceito():
         'erro': "Erro inesperado no servidor",
         'detalhes': str(e)
     }), 500
+
+# TESTE DE PERFIL LOCAIS 
+# IMPLEMENTANDO SISTEMA DE LOGIN PARA PROPRIEDADE (PERFIL LOCAL)
+@login_required
+def salvar_perfil_local():
+  data = request.get_json()
+  try:
+    nome = data.get("nome")
+    propriedade_id = data.get("propriedade_id")
+    permissoes = data.get("permissoes", [])
+    return jsonify(PropriedadeService.salvar_perfil_local(nome, permissoes, propriedade_id).to_dict()), 201
+  except BadRequestError as e:
+    return jsonify(e.to_dict()), 400
+  except ConflictRequestError as e:
+    return jsonify({'erro': e.message}), 400
+
+@login_required
+def atualizar_perfil_local():
+  data = request.get_json()
+  try:
+    usuario_id = data.get("usuario_id")
+    propriedade_id = data.get("propriedade_id")
+    perfil_id = data.get("perfil_id")
+    return jsonify({"mensagem":PropriedadeService().autalizar_perfil_local_usuario(propriedade_id, perfil_id, usuario_id)}), 201
+  except BadRequestError as e:
+    return jsonify({'erro': e.message}), 400
+  except ConflictRequestError as e:
+    return jsonify({'erro': e.message}), 400
+  except NotFoundRequestError as e:
+    return jsonify({'erro': e.message}), 404

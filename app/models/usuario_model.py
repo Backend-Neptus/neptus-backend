@@ -17,12 +17,19 @@ class Usuario(db.Model):
   is_admin = db.Column(db.Boolean, default=False)
   is_active = db.Column(db.Boolean, default=True)
 
-  perfil_id = db.Column(UUID(as_uuid=True), db.ForeignKey('perfil.id'), nullable=False)
+  perfil_id = db.Column(UUID(as_uuid=True),
+                        db.ForeignKey('perfil.id'),
+                        nullable=False)
   perfil = db.relationship('Perfil', back_populates='usuarios')
 
   created_at = db.Column(db.DateTime, default=datetime.utcnow)
-  updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-  propriedades = db.relationship('Propriedade', secondary='propriedade_usuarios', back_populates='usuarios')
+  updated_at = db.Column(db.DateTime,
+                         default=datetime.utcnow,
+                         onupdate=datetime.utcnow)
+  propriedades = db.relationship('Propriedade',
+                                 secondary=propriedade_usuarios,
+                                 back_populates='usuarios',
+                                 overlaps="perfis")
 
   def set_senha(self, senha):
     self.senha_hash = generate_password_hash(senha)
@@ -32,18 +39,30 @@ class Usuario(db.Model):
 
   def to_dict(self):
     return {
-        'id': self.id,
-        'nome': self.nome,
-        'email': self.email,
-        'google_login': self.google_login,
-        'is_admin': self.is_admin,
-        'is_active': self.is_active,
-        'perfil_id': self.perfil_id,
-        'total_propriedades': len(self.propriedades),
-        'propridedade': [propriedade.to_dict() for propriedade in self.propriedades],
-        'created_at': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        'updated_at': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+        'id':
+        self.id,
+        'nome':
+        self.nome,
+        'email':
+        self.email,
+        'google_login':
+        self.google_login,
+        'is_admin':
+        self.is_admin,
+        'is_active':
+        self.is_active,
+        'perfil_id':
+        self.perfil_id,
+        'total_propriedades':
+        len(self.propriedades),
+        'propridedade':
+        [propriedade.to_dict() for propriedade in self.propriedades],
+        'created_at':
+        self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
+        'updated_at':
+        self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
     }
+
   def usuarios_to_dict(self):
     return {
         'id': self.id,

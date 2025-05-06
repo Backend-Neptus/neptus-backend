@@ -3,6 +3,7 @@ import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from app import db
 from sqlalchemy.dialects.postgresql import ARRAY
+from app.models.utils.associacoes import propriedade_perfil
 
 
 class Perfil(db.Model):
@@ -11,7 +12,10 @@ class Perfil(db.Model):
   nome = db.Column(db.String(50), unique=True, nullable=False)
   permissoes = db.Column(ARRAY(db.String), nullable=False, default=[])
   usuarios = db.relationship('Usuario', back_populates='perfil')
-
+  propriedades = db.relationship('Propriedade',
+                                 secondary=propriedade_perfil,
+                                 back_populates='perfis',
+                                 overlaps="usuarios")
   created_at = db.Column(db.DateTime, default=datetime.utcnow)
   updated_at = db.Column(db.DateTime,
                          default=datetime.utcnow,

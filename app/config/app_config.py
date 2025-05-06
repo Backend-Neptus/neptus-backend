@@ -1,7 +1,7 @@
 import os
 
 class APP_CONFIG:
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://neptus:6NTm0CWr5zoy7gzJB4Xi0wyRIiBJ1sbrVO3OBhr173rTjundhPhe5fVGr671dhqb@pgadmin.cloudsyntax.com.br:54333/neptus-teste')
+    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://neptus:6NTm0CWr5zoy7gzJB4Xi0wyRIiBJ1sbrVO3OBhr173rTjundhPhe5fVGr671dhqb@pgadmin.cloudsyntax.com.br:54333/neptus-db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = 'neptus-chave-secreta'
     JWT_SECRET_KEY = 'jwt-chave-secreta'
@@ -20,4 +20,4 @@ class APP_CONFIG:
     RESET_PASSWORD_TOKEN_SECRET = 'reset-password-token-secret'
     RESET_PASSWORD_TOKEN_SALT = 'reset-password-token-salt'
     
-    NEPTUS_URL = 'https://neptus.cloudsyntax.com.br'
+    NEPTUS_URL = 'https://neptus.publicvm.com'

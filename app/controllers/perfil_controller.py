@@ -220,3 +220,5 @@ def buscar_perfil(id):
     return jsonify(PerfilService.buscar_perfil(id).to_dict()), 200
   except NotFoundRequestError as e:
     return jsonify({'erro': e.message}), 404
+
+

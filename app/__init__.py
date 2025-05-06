@@ -57,6 +57,9 @@ app.add_url_rule('/propriedade/usuarios/adicionar', 'adicionar_usuario', proprie
 app.add_url_rule('/propriedade/usuarios/remover', 'remover_usuario', propriedade_controller.remover_usuario, methods=['POST'])
 app.add_url_rule('/propriedade/usuarios/convidar', 'convidar_usuario', propriedade_controller.convidar_usuario, methods=['POST'])
 app.add_url_rule('/propriedade/usuarios/convidar/aceitar', 'convite_aceito', propriedade_controller.convite_aceito, methods=['POST'])
+app.add_url_rule('/propriedade/usuarios/perfil', 'atualizar_perfil_local', propriedade_controller.atualizar_perfil_local, methods=['POST'])
+app.add_url_rule('/propriedade/perfil', 'salvar_perfil_local', propriedade_controller.salvar_perfil_local, methods=['POST'])
+
 
 
 @app.route('/')

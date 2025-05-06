@@ -43,3 +43,10 @@ class PermissionEnum(enum.Enum):
     LEITURA_POR_SENSOR = "leitura_por_sensor"
     LEITURA_CRIAR = "leitura_criar"
     LEITURA_EXCLUIR = "leitura_excluir"
+    
+    
+    
+    
+    # Permissões perfil local
+    
+    ATRIBUIR_PERFIL = "atribuir_perfil"
