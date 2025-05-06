@@ -69,7 +69,10 @@ class AuthService:
   def authorize_google(self, nome: str, email: str):
 
     usuario = Usuario.query.filter_by(email=email).first()
-
+    
+    if usuario and not usuario.google_login:
+            raise GoogleLoginRequestError("Faça login com seu e-mail e senha.")
+  
     if not usuario:
       perfil = default_perfil.get_default_perfil()
       usuario = Usuario(nome=nome,
@@ -81,9 +84,6 @@ class AuthService:
 
     if not usuario.is_active:
       raise UserDisabledError("Usuário desativado")
-
-    if not usuario.google_login:
-      raise GoogleLoginRequestError("Usuário não cadastrado via Google")
 
     return {
         'access_token': create_token.create_token(id=usuario.id,
