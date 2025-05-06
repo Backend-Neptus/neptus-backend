@@ -1,5 +1,7 @@
-class ConflictRequestError(Exception):
+from app.exceptions.app_request_Exception import AppRequestError
 
-  def __init__(self, message: str):
-    self.message = message
-    super().__init__(message)
+
+class ConflictRequestError(AppRequestError):
+  status_code = 409
+  def __init__(self, message="Conflito na requisicao"):
+    super().__init__(message, code="ConflictRequestError", status=409)

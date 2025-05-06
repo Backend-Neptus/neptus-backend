@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from app import db
 from app.exceptions import BadRequestError, ConflictRequestError, NotFoundRequestError
+from app.exceptions.app_request_Exception import AppRequestError
 from app.models.usuario_model import Usuario
 from app.models.perfil_model import Perfil
 from app.utils.permissoes import permission_required, login_required
@@ -59,12 +60,9 @@ def salvar_usuario():
         'data':
         UsuarioService.registrar_usuario(nome, email, senha, perfil_id).to_dict()
     }), 201
-  except BadRequestError as e:
-    return jsonify({"erro": e.message}), 400
-  except ConflictRequestError as e:
-    return jsonify({"erro": e.message}), 409
-  except NotFoundRequestError as e:
-    return jsonify({"erro": e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 @login_required
@@ -133,12 +131,9 @@ def atualizar_usuario(id):
         UsuarioService.atualizar_usuario(id, data['nome'], data['email'],
                                          data['perfil_id']).to_dict()
     }), 200
-  except BadRequestError as e:
-    return jsonify({"erro": e.message}), 400
-  except ConflictRequestError as e:
-    return jsonify({"erro": e.message}), 409
-  except NotFoundRequestError as e:
-    return jsonify({"erro": e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 @login_required
 @permission_required(PermissionEnum.USUARIO_EDITAR)
@@ -170,8 +165,9 @@ def status_usuario(id):
         usuario.to_dict()
     }), 200
     
-  except NotFoundRequestError as e:
-    return jsonify({"erro": e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 @login_required
 @permission_required(PermissionEnum.USUARIO_DETALHAR)
 def buscar_usuario(id):
@@ -194,8 +190,9 @@ def buscar_usuario(id):
   """
   try:
     return jsonify(UsuarioService.buscar_usuario(id).to_dict()), 200
-  except NotFoundRequestError as e:
-    return jsonify({"erro": e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
   
 def relatorio_usuarios():
   return UsuarioService.relatorio_usuarios(), 200

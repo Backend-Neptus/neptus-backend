@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from app import db
 from app.exceptions import BadRequestError, ConflictRequestError, NotFoundRequestError
+from app.exceptions.app_request_Exception import AppRequestError
 from app.models.perfil_model import Perfil
 from app.enum.PermissionEnum import PermissionEnum
 from app.models.usuario_model import Usuario
@@ -42,10 +43,9 @@ def salvar_perfil():
     nome = data.get("nome")
     permissoes = data.get("permissoes", [])
     return jsonify(PerfilService.criar_perfil(nome, permissoes).to_dict()), 201
-  except BadRequestError as e:
-    return jsonify(e.to_dict()), 400
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 400
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 @login_required
@@ -127,12 +127,8 @@ def atualizar_perfil(id):
         'perfil':
         PerfilService.atualizar_perfil(id, nome, permissoes).to_dict()
     }), 200
-  except BadRequestError as e:
-    return jsonify(e.to_dict()), 400
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 409
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
 
 
 @login_required
@@ -192,10 +188,9 @@ def deletar_perfil(id):
   """
   try:
     return jsonify({'messagem': PerfilService.deletar_perfil(id)}), 200
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except BadRequestError as e:
-    return jsonify({'erro': e.message}), 400
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 def buscar_perfil(id):
@@ -218,7 +213,8 @@ def buscar_perfil(id):
     """
   try:
     return jsonify(PerfilService.buscar_perfil(id).to_dict()), 200
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 

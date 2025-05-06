@@ -2,6 +2,7 @@ from flask import request, jsonify
 from app.enum.PermissionEnum import PermissionEnum
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             NotFoundRequestError)
+from app.exceptions.app_request_Exception import AppRequestError
 from app.services.perfil_service import PerfilService
 from app.services.propriedade_service import PropriedadeService
 from app.utils.permissoes import login_required, permission_required
@@ -70,12 +71,9 @@ responses:
         PropriedadeService().cadastrar_propriedade(nome,
                                                    proprietario_id).to_dict()
     }), 200
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 409
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except BadRequestError as e:
-    return jsonify({'erro': e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 def listar_propriedades():
@@ -172,12 +170,9 @@ responses:
         PropriedadeService().atualizar_propriedade(
             id, data.get('nome'), data.get('proprietario_id')).to_dict()
     }), 200
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 409
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except BadRequestError as e:
-    return jsonify({'erro': e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 def detalhar_propriedade(id):
@@ -206,8 +201,9 @@ def detalhar_propriedade(id):
   try:
     return jsonify(
         {'data': PropriedadeService().detalhar_propriedade(id).to_dict()}), 200
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 @login_required
@@ -235,20 +231,8 @@ def adicionar_usuario():
         PropriedadeService().adicionar_usuario(id_propriedade,
                                                id_usuario).to_dict()
     }), 200
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except BadRequestError as e:
-    return jsonify({
-        'erro': "Erro inesperado no servidor",
-        'detalhes': str(e)
-    }), 403
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 409
-  except Exception as e:
-    return jsonify({
-        'erro': "Erro inesperado no servidor",
-        'detalhes': str(e)
-    }), 500
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
 
 
 @login_required
@@ -276,20 +260,9 @@ def remover_usuario():
         PropriedadeService().remover_usuario(id_propriedade,
                                              id_usuario).to_dict()
     }), 200
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except BadRequestError as e:
-    return jsonify({
-        'erro': "Erro inesperado no servidor",
-        'detalhes': str(e)
-    }), 403
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 409
-  except Exception as e:
-    return jsonify({
-        'erro': "Erro inesperado no servidor",
-        'detalhes': str(e)
-    }), 500
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 @login_required
@@ -302,15 +275,9 @@ def convidar_usuario():
         'mensagem':
         PropriedadeService().convidar_usuario(id_propriedade, email)
     }), 200
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except BadRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except Exception as e:
-    return jsonify({
-        'erro': "Erro inesperado no servidor",
-        'detalhes': str(e)
-    }), 500
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 def convite_aceito():
@@ -321,17 +288,8 @@ def convite_aceito():
         'mensagem':
         PropriedadeService().convite_aceito(token_convite).to_dict()
     }), 200
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except BadRequestError as e:
-    return jsonify({'erro': e.message}), 404
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 409
-  except Exception as e:
-    return jsonify({
-        'erro': "Erro inesperado no servidor",
-        'detalhes': str(e)
-    }), 500
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
 
 # TESTE DE PERFIL LOCAIS 
 # IMPLEMENTANDO SISTEMA DE LOGIN PARA PROPRIEDADE (PERFIL LOCAL)
@@ -343,10 +301,9 @@ def salvar_perfil_local():
     propriedade_id = data.get("propriedade_id")
     permissoes = data.get("permissoes", [])
     return jsonify(PropriedadeService.salvar_perfil_local(nome, permissoes, propriedade_id).to_dict()), 201
-  except BadRequestError as e:
-    return jsonify(e.to_dict()), 400
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 400
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 @login_required
 def atualizar_perfil_local():
@@ -356,9 +313,6 @@ def atualizar_perfil_local():
     propriedade_id = data.get("propriedade_id")
     perfil_id = data.get("perfil_id")
     return jsonify({"mensagem":PropriedadeService().autalizar_perfil_local_usuario(propriedade_id, perfil_id, usuario_id)}), 201
-  except BadRequestError as e:
-    return jsonify({'erro': e.message}), 400
-  except ConflictRequestError as e:
-    return jsonify({'erro': e.message}), 400
-  except NotFoundRequestError as e:
-    return jsonify({'erro': e.message}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+

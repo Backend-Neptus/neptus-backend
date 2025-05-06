@@ -5,6 +5,7 @@ from google.auth.transport import requests
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
+from app.exceptions.app_request_Exception import AppRequestError
 from app.services.auth_service import AuthService
 
 
@@ -58,10 +59,8 @@ def register():
     senha = data.get('senha')
     return jsonify(
         AuthService().registrar_usuario(nome, email, senha)), 201
-  except BadRequestError as e:
-    return jsonify({"erro": e.message}), 400
-  except ConflictRequestError as e:
-    return jsonify({"erro": e.message}), 409
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
 
 
 def login():
@@ -108,14 +107,9 @@ def login():
   senha = data.get('senha')
   try:
     return jsonify(AuthService().login(email, senha)), 200
-  except NotFoundRequestError as e:
-    return jsonify({"erro": e.message}), 401
-  except UserDisabledError as e:
-    return jsonify({"erro": e.message}), 403
-  except GoogleLoginRequestError as e:
-    return jsonify({"erro": e.message}), 403
-  except InvalidCredentialsError as e:
-    return jsonify({"erro": e.message}), 401
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 # RESPONSABILIDA DO FRONTEND
 # def login_google():
@@ -159,14 +153,9 @@ def authorize_google():
     email = idinfo['email']
     nome = idinfo['name']
     return jsonify(AuthService().authorize_google(nome, email)), 200
-  except UserDisabledError as e:
-    return jsonify({'erro': e.message}), 403
-  except GoogleLoginRequestError as e:
-    return jsonify({'erro': e.message}), 403
-  except ValueError as e:
-      return jsonify({"error": f"Token inválido: {str(e)}"}), 400
-  except Exception as e:
-      return jsonify({"error": f"Erro interno: {str(e)}"}), 500
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 def reset_password_request():
   """
@@ -206,12 +195,9 @@ def reset_password_request():
 
   try:
     return jsonify({"mensagem": AuthService().recuperar_senha(email)}), 200
-  except NotFoundRequestError as e:
-    return jsonify({"erro": str(e)}), 404
-  except UserDisabledError as e:
-    return jsonify({"erro": str(e)}), 403
-  except GoogleLoginRequestError as e:
-    return jsonify({"erro": str(e)}), 403
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
 
 
 def reset_password():
@@ -220,12 +206,9 @@ def reset_password():
   senha = data.get('senha')
   try:
     return jsonify({"mensagem": AuthService().resetar_senha(token, senha)}), 200
-  except NotFoundRequestError as e:
-    return jsonify({"erro": str(e)}), 404
-  except UserDisabledError as e:
-    return jsonify({"erro": str(e)}), 403
-  except GoogleLoginRequestError as e:
-    return jsonify({"erro": str(e)}), 403
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code
+
  
 @jwt_required(refresh=True)
 def refresh_token():
@@ -254,7 +237,5 @@ def refresh_token():
   usuario_id = get_jwt_identity()
   try:
     return jsonify({'access_token': AuthService().refresh_token(usuario_id)}), 200
-  except UserDisabledError as e:
-    return jsonify({"erro": str(e)}), 403
-  except NotFoundRequestError as e:
-    return jsonify({"erro": str(e)}), 404
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code

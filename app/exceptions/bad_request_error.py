@@ -1,10 +1,7 @@
-class BadRequestError(Exception):
-  
-  def __init__(self, message: str, data=None):
-    self.message = message
-    self.data = data or {}
-    super().__init__(message)
+from app.exceptions.app_request_Exception import AppRequestError
 
-  def to_dict(self):
-    return {"erro": self.message, "data": self.data}
-  
+
+class BadRequestError(AppRequestError):
+  status_code = 400
+  def __init__(self, message="Requisicao invalida"):
+    super().__init__(message, code="BadRequestError", status=400)

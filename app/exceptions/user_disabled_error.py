@@ -1,5 +1,6 @@
-class UserDisabledError(Exception):
+from app.exceptions.app_request_Exception import AppRequestError
 
-  def __init__(self, message: str):
-    self.message = message
-    super().__init__(message)
+class UserDisabledError(AppRequestError):
+  status_code = 403
+  def __init__(self, message="Usuario desabilitado"):
+    super().__init__(message, code="UserDisabledError", status=403)
