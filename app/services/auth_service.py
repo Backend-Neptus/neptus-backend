@@ -39,7 +39,11 @@ class AuthService:
 
     if not usuario.is_active:
       raise UserDisabledError("Usuário desativado")
-
+      
+    if not usuario.google_login:
+      raise GoogleLoginRequestError(
+          "Faça login com seu e-mail e senha.")
+      
     if usuario.google_login:
       raise GoogleLoginRequestError(
           "Usuário cadastrado via Google, use o login com Google")
