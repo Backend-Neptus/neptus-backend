@@ -1,4 +1,6 @@
+from werkzeug.exceptions import MethodNotAllowed
 from flask import jsonify
+from itsdangerous import BadTimeSignature, SignatureExpired
 from app import app
 
 class AppRequestError(Exception):
@@ -30,7 +32,7 @@ def handle_unexpected_exception(e):
     )
     return jsonify(app_error.to_dict()), 500
 
-@app.errorhandler(Exception)
+@app.errorhandler(SignatureExpired)
 def handle_signature_exception(e):
 
     app_error = AppRequestError(
@@ -39,3 +41,30 @@ def handle_signature_exception(e):
         status=401
     )
     return jsonify(app_error.to_dict()), 401
+
+@app.errorhandler(BadTimeSignature)
+def handle_bad_signature(e):
+    app_error = AppRequestError(
+        message="Token inválido ou corrompido.",
+        code=type(e).__name__,
+        status=400
+    )
+    return jsonify(app_error.to_dict()), 400
+
+@app.errorhandler(MethodNotAllowed)
+def handle_method_not_allowed(e):
+    app_error = AppRequestError(
+        message="Método HTTP não permitido para esta rota.",
+        code=type(e).__name__,
+        status=405
+    )
+    return jsonify(app_error.to_dict()), 405
+
+@app.errorhandler(TimeoutError)
+def handle_method_not_allowed(e):
+    app_error = AppRequestError(
+        message="O servidor demorou para responder. Tente novamente mais tarde.",
+        code=type(e).__name__,
+        status=408 
+    )
+    return jsonify(app_error.to_dict()), 408 
