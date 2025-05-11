@@ -12,32 +12,6 @@ from app.utils.permissoes import permission_required, login_required
 @login_required
 @permission_required(PermissionEnum.PERFIL_CRIAR)
 def salvar_perfil():
-  """
-    Salva um novo perfil.
-    ---
-    tags:
-      - Perfil
-    consumes:
-      - application/json
-    parameters:
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            nome:
-              type: string
-              example: "Administrador"
-            permissoes:
-              type: array
-              example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
-    responses:
-      201:
-        description: Perfil criado com sucesso!
-      400:
-        description: O campo 'nome' é obrigatório
-    """
   data = request.get_json()
   try:
     nome = data.get("nome")
@@ -51,36 +25,10 @@ def salvar_perfil():
 @login_required
 @permission_required(PermissionEnum.PERFIL_LISTAR)
 def listar_perfil():
-  """
-    Listar todos os perfis cadastrados.
-    ---
-    tags:
-      - Perfil
-    produces:
-      - application/json
-    responses:
-      200:
-        description: Lista de perfis retornada com sucesso.
-        schema:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string  # Alterado de integer para string (UUID)
-                example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
-              nome:
-                type: string
-                example: "Administrador"
-              permissoes:
-                type: array
-                items:
-                  type: string
-                example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
-  """
   return jsonify(PerfilService.listar_perfis()), 200
 
-
+@login_required
+@permission_required(PermissionEnum.PERFIL_EDITAR)
 def atualizar_perfil(id):
   """
     Atualiza um perfil existente.
@@ -132,85 +80,17 @@ def atualizar_perfil(id):
 
 
 @login_required
-@permission_required(PermissionEnum.PERFIL_LISTAR)
-def listar_perfil():
-  """
-    Listar todos os perfis cadastrados.
-    ---
-    tags:
-      - Perfil
-    produces:
-      - application/json
-    responses:
-      200:
-        description: Lista de perfis retornada com sucesso.
-        schema:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: string  # Alterado de integer para string (UUID)
-                example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
-              nome:
-                type: string
-                example: "Administrador"
-              permissoes:
-                type: array
-                items:
-                  type: string
-                example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
-  """
-  return jsonify(PerfilService.listar_perfis()), 200
-
-
-@login_required
 @permission_required(PermissionEnum.PERFIL_EXCLUIR)
 def deletar_perfil(id):
-  """
-    Deleta um perfil existente.
-    ---
-    tags:
-      - Perfil
-    parameters:
-      - in: path
-        name: id
-        required: true
-        type: string  # Alterado de integer para string (UUID)
-        example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
-    responses:
-      200:
-        description: Perfil deletado com sucesso! todos os usuarios foram transferidos para o perfil default
-      404:
-        description: Perfil nao encontrado
-      400:
-        description: Perfil default nao pode ser deletado
-  """
   try:
     return jsonify({'messagem': PerfilService.deletar_perfil(id)}), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 
 
-
+@login_required
+@permission_required(PermissionEnum.PERFIL_DETALHAR)
 def buscar_perfil(id):
-  """
-      Busca um perfil existente.
-      ---
-      tags:
-        - Perfil
-      parameters:
-        - in: path
-          name: id
-          required: true
-          type: string  # Alterado de integer para string (UUID)
-          example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
-      responses:
-        200:
-          description: Perfil encontrado com sucesso!
-        404:
-          description: Perfil nao encontrado
-    """
   try:
     return jsonify(PerfilService.buscar_perfil(id).to_dict()), 200
   except AppRequestError as e:

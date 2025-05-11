@@ -27,32 +27,22 @@ class PerfilService:
       raise BadRequestError(message="Permissões inválidas",
                             data={'permissoes': permissoes_invalidas})
 
-    if db.session.query(Perfil).filter_by(nome=nome).first() is not None:
-      raise ConflictRequestError("Perfil com esse nome ja cadastrado")
-
-    perfil = Perfil(nome=nome, permissoes=permissoes)
+    perfil = Perfil(nome=nome, permissoes=permissoes, is_global=True)
     db.session.add(perfil)
     db.session.commit()
 
     return perfil
 
   def listar_perfis():
-    return [{
-        "id": perfil.id,
-        "nome": perfil.nome,
-        "permissoes": perfil.permissoes,
-        "usuarios": len(perfil.usuarios),
-        "created_at": perfil.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        "updated_at": perfil.updated_at.strftime('%d/%m/%Y %H:%M:%S')
-    } for perfil in Perfil.query.order_by(Perfil.created_at).all()]
-
+    return [perfil.to_dict() for perfil in Perfil.query.order_by(Perfil.created_at).all()]
+  
   def atualizar_perfil(id, nome, permissoes):
     perfil = Perfil.query.filter_by(id=id).first()
 
     perfil_default = get_default_perfil()
     if perfil.id == perfil_default.id:
       if nome != perfil_default.nome:
-        raise BadRequestError("O campo 'nome' nao pode ser alterado para o perfil default")
+        raise BadRequestError("O campo 'nome' não pode ser alterado para o perfil default")
     
     if not perfil:
       raise NotFoundRequestError("Perfil nao encontrado")
@@ -73,10 +63,6 @@ class PerfilService:
     if permissoes_invalidas:
       raise BadRequestError(message="Permissões inválidas",
                             data={'permissoes': permissoes_invalidas})
-
-    perfil_existente = Perfil.query.filter_by(nome=nome).first()
-    if perfil_existente and perfil_existente.id != perfil.id:
-      raise ConflictRequestError("Perfil com esse nome ja cadastrado")
 
     perfil.nome = nome
     perfil.permissoes = permissoes

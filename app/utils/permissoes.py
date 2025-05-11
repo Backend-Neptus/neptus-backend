@@ -1,6 +1,8 @@
 from functools import wraps
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
 from flask import g, jsonify
+from app.exceptions.unauthorized_request_error import UnauthorizedRequestError
+from app.exceptions.app_request_Exception import AppRequestError
 from app.models.usuario_model import Usuario 
 
 def permission_required(permissao):
@@ -19,7 +21,7 @@ def permission_required(permissao):
                 return func(*args, **kwargs)
 
             if permissao.value not in permissoes_lista:
-                return jsonify({'erro': 'Permissão negada'}), 403
+                raise UnauthorizedRequestError("Você não possui permissão para acessar esta funcionalidade!")
 
             return func(*args, **kwargs)
         return decorator
@@ -37,9 +39,8 @@ def login_required(func):
                 return jsonify({'erro': 'Seu usuário foi desativado'}), 401
 
             return func(*args, **kwargs)
-        except Exception as e:
-            print("Exception:", e)
-            return jsonify({'erro': 'Token inválido ou ausente', 'detalhes': str(e)}), 401
+        except AppRequestError as e:
+            return jsonify(e.to_dict()), e.status_code
 
     return wrapper
 
