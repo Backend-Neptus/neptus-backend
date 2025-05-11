@@ -33,8 +33,18 @@ class PerfilService:
 
     return perfil
 
-  def listar_perfis():
-    return [perfil.to_dict() for perfil in Perfil.query.order_by(Perfil.created_at).all()]
+  def listar_perfis(page, per_page):
+    if per_page > 50:
+      per_page = 50
+    perfis = Perfil.query.order_by(Perfil.created_at).paginate(
+        page=page, per_page=per_page, error_out=False)
+    return {
+        'total': perfis.total,
+        'pagina_atual': perfis.page,
+        'itens_por_pagina': perfis.per_page,
+        'total_paginas': perfis.pages,
+        'perfis': [perfil.to_dict() for perfil in perfis]
+    }
   
   def atualizar_perfil(id, nome, permissoes):
     perfil = Perfil.query.filter_by(id=id).first()

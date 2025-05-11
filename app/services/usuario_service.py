@@ -43,7 +43,7 @@ class UsuarioService():
     if per_page > 50:
       per_page = 50
 
-    usuario = Usuario.query.paginate(page=page,
+    usuario = Usuario.query.order_by(Usuario.created_at).paginate(page=page,
                                      per_page=per_page,
                                      error_out=False)
     return {
