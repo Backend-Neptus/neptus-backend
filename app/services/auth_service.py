@@ -40,10 +40,6 @@ class AuthService:
     if not usuario.is_active:
       raise UserDisabledError("Usuário desativado")
       
-    if not usuario.google_login:
-      raise GoogleLoginRequestError(
-          "Faça login com seu e-mail e senha.")
-      
     if usuario.google_login:
       raise GoogleLoginRequestError(
           "Usuário cadastrado via Google, use o login com Google")
@@ -69,9 +65,6 @@ class AuthService:
   def authorize_google(self, nome: str, email: str):
 
     usuario = Usuario.query.filter_by(email=email).first()
-    
-    if usuario and not usuario.google_login:
-            raise GoogleLoginRequestError("Faça login com seu e-mail e senha.")
   
     if not usuario:
       perfil = default_perfil.get_default_perfil()
@@ -81,6 +74,9 @@ class AuthService:
                         google_login=True)
       db.session.add(usuario)
       db.session.commit()
+
+    if not usuario.google_login:
+        raise GoogleLoginRequestError("Faça login com seu e-mail e senha.")
 
     if not usuario.is_active:
       raise UserDisabledError("Usuário desativado")
