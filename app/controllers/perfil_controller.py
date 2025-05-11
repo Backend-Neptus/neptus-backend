@@ -20,8 +20,6 @@ def salvar_perfil():
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 
-
-
 @login_required
 @permission_required(PermissionEnum.PERFIL_LISTAR)
 def listar_perfil():
@@ -30,41 +28,6 @@ def listar_perfil():
 @login_required
 @permission_required(PermissionEnum.PERFIL_EDITAR)
 def atualizar_perfil(id):
-  """
-    Atualiza um perfil existente.
-    ---
-    tags:
-      - Perfil
-    parameters:
-      - in: path
-        name: id
-        required: true
-        type: string  # Alterado de integer para string (UUID)
-        example: "51b03e1a-f849-438e-951a-f19a27b35902"  # Exemplo de UUID
-      - in: body
-        name: body
-        required: true
-        schema:
-          type: object
-          properties:
-            nome:
-              type: string
-              example: "Novo Nome de Perfil"
-            permissoes:
-              type: array
-              items:
-                type: string
-              example: ["USUARIO_LISTAR", "USUARIO_DETALHAR"]
-    responses:
-      200:
-        description: Perfil atualizado com sucesso!
-      400:
-        description: Dados inválidos
-      409:
-        description: Perfil com nome ja cadastrado
-      404:
-        description: Perfil não encontrado
-  """
   data = request.get_json()
   try:
     nome = data.get("nome")
