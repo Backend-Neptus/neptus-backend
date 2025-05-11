@@ -9,7 +9,7 @@ from app.models.utils.associacoes import propriedade_perfil
 class Perfil(db.Model):
   __tablename__ = 'perfil'
   id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-  nome = db.Column(db.String(50), unique=True, nullable=False)
+  nome = db.Column(db.String(50), unique=False, nullable=False)
   permissoes = db.Column(ARRAY(db.String), nullable=False, default=[])
   usuarios = db.relationship('Usuario', back_populates='perfil')
   propriedades = db.relationship('Propriedade',
@@ -20,6 +20,7 @@ class Perfil(db.Model):
   updated_at = db.Column(db.DateTime,
                          default=datetime.utcnow,
                          onupdate=datetime.utcnow)
+  is_global = db.Column(db.Boolean, default=False)
 
   def to_dict(self):
     return {
@@ -28,5 +29,6 @@ class Perfil(db.Model):
         "permissoes": self.permissoes,
         "usuarios": len(self.usuarios),
         "created_at": self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        "updated_at": self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+        "updated_at": self.updated_at.strftime('%d/%m/%Y %H:%M:%S'),
+        "is_global": self.is_global
     }
