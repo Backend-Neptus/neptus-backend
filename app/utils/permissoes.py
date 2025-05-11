@@ -11,18 +11,20 @@ def permission_required(permissao):
         @jwt_required()
         def decorator(*args, **kwargs):
             usuario = g.usuario
-
             if not usuario or not usuario.perfil:
-                return jsonify({'erro': 'Usuário sem perfil'}), 403
+                # Isso jamais deve acontecer, mas é uma boa prática
+                    # Esperamos que o usuário tenha um perfil associado
+                        # Espero que isso jamais aconteça
+                            # Espero que o usuário tenha um perfil associado
+                        # Isso deve ser tratado em outro lugar
+                # verificar se o usuário está logado e tem um perfil associado
+                raise UnauthorizedRequestError("Usuário não encontrado ou sem perfil associado")
             permissoes_lista = usuario.perfil.permissoes
-
             # Permitir acesso total para administradores
             if usuario.is_admin:
                 return func(*args, **kwargs)
-
             if permissao.value not in permissoes_lista:
                 raise UnauthorizedRequestError("Você não possui permissão para acessar esta funcionalidade!")
-
             return func(*args, **kwargs)
         return decorator
     return wrapper
@@ -32,16 +34,13 @@ def login_required(func):
     def wrapper(*args, **kwargs):
         try:
             usuario = carregar_usuario_logado()
-
             if not usuario:
-                return jsonify({'erro': 'Usuário não encontrado, logue novamente'}), 404
+                raise UnauthorizedRequestError("Favor fazer login para acessar esta funcionalidade")
             if not usuario.is_active:
-                return jsonify({'erro': 'Seu usuário foi desativado'}), 401
-
+                raise UnauthorizedRequestError("Usuário inativo, favor entrar em contato com o administrador do sistema")
             return func(*args, **kwargs)
         except AppRequestError as e:
             return jsonify(e.to_dict()), e.status_code
-
     return wrapper
 
 def carregar_usuario_logado():
@@ -51,7 +50,6 @@ def carregar_usuario_logado():
         if usuario_id:
             g.usuario = Usuario.query.get(usuario_id)
             ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
-            
             g.user_ip = ip_address
             print(f"IP do usuário: {g.user_ip}")
             return g.usuario
