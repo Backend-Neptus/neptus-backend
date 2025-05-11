@@ -1,57 +1,12 @@
-from flask import request, jsonify, url_for
+from flask import request, jsonify
 from flask_jwt_extended import get_jwt_identity, jwt_required
 from google.oauth2 import id_token
 from google.auth.transport import requests
-from app.exceptions import (BadRequestError, ConflictRequestError,
-                            UserDisabledError, GoogleLoginRequestError,
-                            NotFoundRequestError, InvalidCredentialsError)
 from app.exceptions.app_request_Exception import AppRequestError
 from app.services.auth_service import AuthService
 
 
 def register():
-  """
-    Cadastra um novo usuário.
-    ---
-    tags:
-      - Autenticação
-    parameters:
-      - in: body
-        name: corpo
-        required: true
-        schema:
-          type: object
-          required:
-            - nome
-            - email
-            - senha
-          properties:
-            nome:
-              type: string
-              example: João da Silva
-            email:
-              type: string
-              example: joao@email.com
-            senha:
-              type: string
-              example: 123456
-    responses:
-      201:
-        description: Usuário cadastrado com sucesso
-        examples:
-          application/json:
-            mensagem: Usuário cadastrado com sucesso!
-      400:
-        description: Os campos 'nome', 'email' e 'senha' devem ser preenchidos
-        examples:
-          application/json:
-            erro: Os campos 'nome', 'email' e 'senha' devem ser preenchidos
-      409:
-        description: E-mail ja cadastrado
-        examples:
-          application/json:
-            erro: E-mail ja cadastrado
-    """
   data = request.get_json()
   try:
     nome = data.get('nome')
@@ -64,44 +19,6 @@ def register():
 
 
 def login():
-  """
-    Realiza o login com e-mail e senha.
-    ---
-    tags:
-      - Autenticação
-    parameters:
-      - in: body
-        name: corpo
-        required: true
-        schema:
-          type: object
-          required:
-            - email
-            - senha
-          properties:
-            email:
-              type: string
-              example: joao@email.com
-            senha:
-              type: string
-              example: 123456
-    responses:
-      200:
-        description: Login realizado com sucesso
-        examples:
-          application/json:
-            token: eyJ0eXAiOiJKV1QiLCJhbGciOi...
-      401:
-        description: Usuário não cadastrado ou Email ou senha inválidos
-        examples:
-          application/json:
-            erro: Usuário não cadastrado ou Email ou senha inválidos
-      403:
-        description: Usuário desativado ou cadastrado via Google
-        examples:
-          application/json:
-            erro: Usuário desativado ou cadastrado via Google
-    """
   data = request.get_json()
   email = data.get('email')
   senha = data.get('senha')
@@ -111,40 +28,7 @@ def login():
     return jsonify(e.to_dict()), e.status_code
 
 
-# RESPONSABILIDA DO FRONTEND
-# def login_google():
-#   """
-#     Inicia o processo de login com o Google.
-#     ---
-#     tags:
-#       - Autenticação
-#     responses:
-#       302:
-#         description: Redireciona para o login do Google
-#     """
-#   redirect_uri = url_for('authorize_google', _external=True)
-#   return google.authorize_redirect(redirect_uri)
-
-
 def authorize_google():
-  """
-    login com o Google.
-    ---
-    tags:
-      - Autenticação
-    responses:
-      200:
-        description: Login realizado com sucesso
-        examples:
-          application/json:
-            token: eyJ0eXAiOiJKV1QiLCJhbGciOi...
-      403:
-        description: Usuário desativado ou não cadastrado via Google
-        examples:
-          application/json:
-            erro: Usuário desativado ou não cadastrado via Google
-  """
-
   try:
     CLIENT_ID_GOOGLE = '18188128770-tpbogkb7i4f99c3o6701e2r25ap4jtes.apps.googleusercontent.com'
     dados = request.get_json()
@@ -158,38 +42,6 @@ def authorize_google():
 
 
 def reset_password_request():
-  """
-    Gera uma nova senha e envia para o e-mail informado.
-    ---
-    tags:
-      - Autenticação
-    parameters:
-      - in: body
-        name: corpo
-        required: true
-        schema:
-          type: object
-          properties:
-            email:
-              type: string
-              example: usuario@exemplo.com
-    responses:
-      200:
-        description: Nova senha enviada com sucesso.
-        examples:
-          application/json:
-            mensagem: Nova senha enviada para o e-mail.
-      403:
-        description: Usuário desativado ou cadastrado via Google.
-        examples:
-          application/json:
-            erro: Usuário desativado
-      404:
-        description: E-mail não encontrado.
-        examples:
-          application/json:
-            erro: E-mail não encontrado
-    """
   dados = request.get_json()
   email = dados.get('email')
 
@@ -197,7 +49,6 @@ def reset_password_request():
     return jsonify({"mensagem": AuthService().recuperar_senha(email)}), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
-
 
 
 def reset_password():
@@ -212,28 +63,6 @@ def reset_password():
  
 @jwt_required(refresh=True)
 def refresh_token():
-  """
-    Gera um novo token de acesso.
-    ---
-    tags:
-      - Autenticação
-    responses:
-      200:
-        description: Novo token de acesso gerado com sucesso.
-        examples:
-          application/json:
-            access_token: eyJ0eXAiOiJKV1QiLCJhbGciOi...
-      403:
-        description: Usuário desativado ou cadastrado via Google.
-        examples:
-          application/json:
-            erro: Usuário desativado
-      404:
-        description: Usuário nao encontrado.
-        examples:
-          application/json:
-            erro: Usuário nao encontrado
-    """
   usuario_id = get_jwt_identity()
   try:
     return jsonify({'access_token': AuthService().refresh_token(usuario_id)}), 200

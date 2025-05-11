@@ -1,5 +1,6 @@
 from itsdangerous import URLSafeTimedSerializer
 from app import db
+from app.config.app_config import APP_CONFIG
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
@@ -25,10 +26,18 @@ class AuthService:
     db.session.commit()
 
     return {
-        'messagem': "Usuário cadastrado com sucesso",
         'access_token': create_token.create_token(id=usuario.id,
                                                   nome=usuario.nome),
-        'refresh_token': create_token.refresh_token(id=usuario.id)
+        'refresh_token': create_token.refresh_token(id=usuario.id),
+        'mensagem': "Login efetuado com sucesso",
+        'usuario': {
+            'id': usuario.id,
+            'nome': usuario.nome,
+            'email': usuario.email,
+            'perfil': usuario.perfil.nome,
+            'is_admin': usuario.is_admin,
+            'permissoes': usuario.perfil.permissoes
+        },
     }
 
   def login(self, email: str, senha: str):
@@ -99,8 +108,8 @@ class AuthService:
   def recuperar_senha(self, email: str):
     usuario = Usuario.query.filter_by(email=email).first()
 
-    s = URLSafeTimedSerializer("secret_key")
-    token_reset = s.dumps(email, salt="salt_key")
+    s = URLSafeTimedSerializer(APP_CONFIG.RESET_PASSWORD_TOKEN_SECRET)
+    token_reset = s.dumps(email, salt=APP_CONFIG.RESET_PASSWORD_TOKEN_SALT)
 
     if not usuario:
       raise NotFoundRequestError("E-mail não encontrado")
@@ -124,8 +133,8 @@ class AuthService:
     return refresh_token
 
   def resetar_senha(self, token_reset: str, senha: str):
-    s = URLSafeTimedSerializer("secret_key")
-    email = s.loads(token_reset, salt="salt_key", max_age=3600)
+    s = URLSafeTimedSerializer(APP_CONFIG.RESET_PASSWORD_TOKEN_SECRET)
+    email = s.loads(token_reset, salt=APP_CONFIG.RESET_PASSWORD_TOKEN_SALT, max_age=3600)
     usuario = Usuario.query.filter_by(email=email).first()
     if not usuario:
       raise NotFoundRequestError("E-mail nao encontrado")
