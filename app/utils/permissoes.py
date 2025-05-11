@@ -1,6 +1,6 @@
 from functools import wraps
 from flask_jwt_extended import jwt_required, get_jwt_identity, verify_jwt_in_request
-from flask import g, jsonify
+from flask import g, jsonify, request
 from app.exceptions.unauthorized_request_error import UnauthorizedRequestError
 from app.exceptions.app_request_Exception import AppRequestError
 from app.models.usuario_model import Usuario 
@@ -50,8 +50,11 @@ def carregar_usuario_logado():
         usuario_id = get_jwt_identity()
         if usuario_id:
             g.usuario = Usuario.query.get(usuario_id)
-            return g.usuario
+            ip_address = request.headers.get('X-Forwarded-For', request.remote_addr)
             
+            g.user_ip = ip_address
+            print(f"IP do usuário: {g.user_ip}")
+            return g.usuario
         else:
             g.usuario = None
     except Exception as e:
