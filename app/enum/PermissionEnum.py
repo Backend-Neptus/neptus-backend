@@ -16,6 +16,15 @@ class PermissionEnum(enum.Enum):
     PERFIL_EDITAR = "perfil_editar"
     PERFIL_EXCLUIR = "perfil_excluir"
 
+
+    # Permissões para propriedades
+    PROPRIEDADE_LISTAR = "propriedade_listar"
+    PROPRIEDADE_DETALHAR = "propriedade_detalhar"
+    PROPRIEDADE_CRIAR = "propriedade_criar"
+    PROPRIEDADE_EDITAR = "propriedade_editar"
+    PROPRIEDADE_EXCLUIR = "propriedade_excluir"
+
+
     # Permissões para gerenciamento de permissões
     PERMISSAO_LISTAR = "permissao_listar"
     PERMISSAO_DETALHAR = "permissao_detalhar"

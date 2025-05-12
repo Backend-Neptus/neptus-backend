@@ -19,12 +19,12 @@ class PropriedadeService:
     self.__verificar_dados(nome, proprietario_id)
     propriedade = Propriedade.query.filter_by(nome=nome).first()
     if propriedade:
-      raise ConflictRequestError("Propriedade com mesmo nome ja cadastrada")
+      raise ConflictRequestError("Propriedade com mesmo nome já cadastrada")
     usuario = Usuario.query.get(proprietario_id)
     print(proprietario_id)
     print(usuario)
     if not usuario:
-      raise NotFoundRequestError("Proprietario nao encontrado")
+      raise NotFoundRequestError("Usuário não encontrado")
 
     propriedade = Propriedade()
     propriedade.nome = nome
@@ -34,34 +34,42 @@ class PropriedadeService:
     db.session.commit()
     return propriedade
 
-  def listar_propriedades(self):
-    return [
-        propriedade.to_dict() for propriedade in Propriedade.query.order_by(
-            Propriedade.created_at).all()
-    ]
+  def listar_propriedades(self, page, per_page):
+    if per_page > 50:
+      per_page = 50
+    propriedade = Propriedade.query.order_by(Propriedade.created_at).paginate(
+        page=page, per_page=per_page, error_out=False)
+    return {
+        'total': propriedade.total,
+        'pagina_atual': propriedade.page,
+        'itens_por_pagina': propriedade.per_page,
+        'total_paginas': propriedade.pages,
+        'propriedades': [propriedade.to_dict() for propriedade in propriedade]
+    }
 
   def atualizar_propriedade(self, id: str, nome: str, proprietario_id: str):
     if (not nome) or (not proprietario_id):
-      raise BadRequestError(
-          "Os campos 'nome' e 'proprietario_id' devem ser preenchidos")
+        raise BadRequestError("Os campos 'nome' e 'proprietario_id' devem ser preenchidos")
+
     propriedade = self.__propriedade_existe(id)
+
     nome_existente = Propriedade.query.filter_by(nome=nome).first()
-    if propriedade.id != nome_existente.id:
-      raise ConflictRequestError("Propriedade com mesmo nome ja cadastrada")
+    if nome_existente and nome_existente.id != propriedade.id:
+        raise ConflictRequestError("Propriedade com mesmo nome já cadastrada")
 
     if propriedade.proprietario_id != proprietario_id:
-      novo_usuario = Usuario.query.get(proprietario_id)
-      if not novo_usuario:
-        raise NotFoundRequestError("Proprietário não encontrado")
+        novo_usuario = Usuario.query.get(proprietario_id)
+        if not novo_usuario:
+            raise NotFoundRequestError("Proprietário não encontrado")
 
-      if novo_usuario not in propriedade.usuarios:
-        propriedade.usuarios.append(novo_usuario)
+        if novo_usuario not in propriedade.usuarios:
+            propriedade.usuarios.append(novo_usuario)
 
-      usuario_antigo = Usuario.query.get(propriedade.proprietario_id)
-      if usuario_antigo and usuario_antigo in propriedade.usuarios:
-        propriedade.usuarios.remove(usuario_antigo)
+        usuario_antigo = Usuario.query.get(propriedade.proprietario_id)
+        if usuario_antigo and usuario_antigo in propriedade.usuarios:
+            propriedade.usuarios.remove(usuario_antigo)
 
-      propriedade.proprietario_id = proprietario_id
+        propriedade.proprietario_id = proprietario_id
 
     propriedade.nome = nome
     db.session.commit()
@@ -70,7 +78,7 @@ class PropriedadeService:
   def detalhar_propriedade(self, id: str):
     propriedade = Propriedade.query.get(id)
     if not propriedade:
-      raise NotFoundRequestError("Propriedade nao encontrada")
+      raise NotFoundRequestError("Propriedade não encontrada")
     return propriedade
 
   def adicionar_usuario(self, id: str, usuario_id: str):
