@@ -35,5 +35,5 @@ register_routes(app)
 
 @app.route('/')
 def home():
-    return redirect(url_for('flasgger.apidocs'))
+    return redirect('https://docs.neptus.publicvm.com/share/zdm8lrpgbk/p/neptus-documentacao-BVR7NIppdg')
 
