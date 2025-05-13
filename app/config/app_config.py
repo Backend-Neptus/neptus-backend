@@ -20,4 +20,4 @@ class APP_CONFIG:
     RESET_PASSWORD_TOKEN_SECRET = 'reset-password-token-secret'
     RESET_PASSWORD_TOKEN_SALT = 'reset-password-token-salt'
     
-    NEPTUS_URL = 'https://neptus.publicvm.com'
+    NEPTUS_URL = 'https://neptus.vercel.app'

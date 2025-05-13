@@ -109,6 +109,13 @@ class PropriedadeService:
           "Usuário nao possui permissao para remover usuario a propriedade")
     return propriedade
 
+
+##########################################################
+###                                                    ###
+###Esta é uma rota de acesso vinculada ao perfil local.###
+###                                                    ###
+##########################################################
+
   def convidar_usuario(self, id: str, email: str):
     propriedade = self.__propriedade_existe(id)
     if self.__verificar_permissao_propriedade(propriedade):
@@ -143,12 +150,11 @@ class PropriedadeService:
       raise ConflictRequestError("Usuário ja cadastrado na propriedade")
     propriedade.usuarios.append(usuario)
     db.session.commit()
-    return propriedade
+    return "Convite aceito com sucesso!"
 
   # COMO ISSO FUNCIONA?
   #TODO PRECISA FAZER VALIDACOES DE CAMPOS E PERMISSOES
   def salvar_perfil_local(nome, permissoes, propriedade_id):
-
     if not nome:
       raise BadRequestError("O campo 'nome' é obrigatório", data=nome)
 
@@ -179,12 +185,8 @@ class PropriedadeService:
       db.session.commit()
     return perfil
 
-  def autalizar_perfil_local_usuario(self, propriedade_id, perfil_id,
-                                     usuario_id):
-    propriedade = self.__propriedade_existe(
-        propriedade_id
-    )  #TEMOS UMA DUPLICAÇÃO DE PROPRIEDADE AQUI E EM VERIFICAR_PERMISSAO_PERFIL_LOCAL
-    #TODO VERIFICAR SE ESSA DUPLICAÇÃO EH NECESSÁRIA
+  def autalizar_perfil_local_usuario(self, propriedade_id, perfil_id, usuario_id):
+    propriedade = self.__propriedade_existe(propriedade_id)
     perfil = Perfil.query.get(perfil_id)
     if perfil in propriedade.perfis:
       if PermissaoPerfilLocal().verificar_permissao_perfil_local(

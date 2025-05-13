@@ -1,6 +1,7 @@
 def register_client_routes(app):
     from app.controllers.v1 import (
-    auth_controller
+    auth_controller,
+    propriedade_controller
     )
     # ROTAS NÃO ADMINISTRATIVAS
     # Auth
@@ -11,8 +12,9 @@ def register_client_routes(app):
     app.add_url_rule('/auth/reset-password', 'reset_password', auth_controller.reset_password, methods=['POST'])
     app.add_url_rule('/auth/login/google', 'authorize_google', auth_controller.authorize_google, methods=['POST'])
 
-    # app.add_url_rule('/v1/propriedades/usuarios/convidar', 'convidar_usuario', propriedade_controller.convidar_usuario, methods=['POST'])
-    # app.add_url_rule('/v1/propriedades/usuarios/convidar/aceitar', 'convite_aceito', propriedade_controller.convite_aceito, methods=['POST'])
-    # app.add_url_rule('/v1/propriedades/usuarios/perfil', 'atualizar_perfil_local', propriedade_controller.atualizar_perfil_local, methods=['POST'])
-    # app.add_url_rule('/v1/propriedades/perfil', 'salvar_perfil_local', propriedade_controller.salvar_perfil_local, methods=['POST'])
+    app.add_url_rule('/v1/propriedades/usuarios/convites', 'convidar_usuario', propriedade_controller.convidar_usuario, methods=['POST'])
+    app.add_url_rule('/v1/propriedades/usuarios/convites/aceite', 'convite_aceito', propriedade_controller.convite_aceito, methods=['POST'])
+    app.add_url_rule('/v1/propriedades/perfis', 'criar_perfil_local', propriedade_controller.criar_perfil_local, methods=['POST'])
+    app.add_url_rule('/v1/propriedades/perfis/usuarios', 'atualizar_perfil_local', propriedade_controller.atualizar_perfil_local, methods=['POST'])
+
 
