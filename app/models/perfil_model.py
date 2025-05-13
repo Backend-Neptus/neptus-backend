@@ -32,3 +32,10 @@ class Perfil(db.Model):
         "updated_at": self.updated_at.strftime('%d/%m/%Y %H:%M:%S'),
         "is_global": self.is_global
     }
+
+  def pertence_a_propriedade(self, propriedade_id):
+      result = db.session.query(propriedade_perfil).filter_by(
+          perfil_id=self.id,
+          propriedade_id=propriedade_id
+      ).first()
+      return result is not None

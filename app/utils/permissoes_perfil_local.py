@@ -25,17 +25,19 @@ class PermissaoPerfilLocal:
         if not permissao:
             raise NotFoundRequestError("Permissão não encontrada ou inexistente")
         usuario_request = g.usuario
-        propriedade = Propriedade.query.filter_by(id=propriedade_id).first()
+        propriedade = propriedade = Propriedade.query.get(propriedade_id)
         if not propriedade:
-            raise NotFoundRequestError("Propriedade nao encontrada")
+            raise NotFoundRequestError("Propriedade não encontrada")
         if usuario_request.is_admin:
             return True
         if propriedade.proprietario_id == usuario_request.id:
             return True
         perfil_id = self.__get_perfil_local_usuario(usuario_request.id, propriedade_id)
         perfil = Perfil.query.filter_by(id=perfil_id).first()
-        if not perfil or permissao.value not in perfil.permissoes:
-            raise NotFoundRequestError("Voce não possui permissao para essa acao")
+        if not perfil:
+            raise NotFoundRequestError("Você não possui permissão para essa ação")
+        if permissao.value not in perfil.permissoes:
+            raise NotFoundRequestError("Você não possui permissão para essa ação")
         return True
 
 

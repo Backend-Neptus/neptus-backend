@@ -59,6 +59,7 @@ class PermissionEnum(enum.Enum):
     # Permissões perfil local
     
     ATRIBUIR_PERFIL = "atribuir_perfil"
+    PERFIL_EDITAR_LOCAL = "atualizar_perfil_local"
     PROPRIEDADE_CONVIDAR = "propriedade_convidar"
     PROPRIEDADE_CONVITE_ACEITO = "propriedade_convite_aceito"
     

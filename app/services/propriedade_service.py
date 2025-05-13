@@ -154,7 +154,7 @@ class PropriedadeService:
 
   # COMO ISSO FUNCIONA?
   #TODO PRECISA FAZER VALIDACOES DE CAMPOS E PERMISSOES
-  def salvar_perfil_local(nome, permissoes, propriedade_id):
+  def salvar_perfil_local(self, nome, permissoes, propriedade_id):
     if not nome:
       raise BadRequestError("O campo 'nome' é obrigatório", data=nome)
 
@@ -184,6 +184,37 @@ class PropriedadeService:
       db.session.add(perfil)
       db.session.commit()
     return perfil
+
+  def atualizar_perfil_local(self, perfil_id, nome, permissoes, propriedade_id):
+    if PermissaoPerfilLocal().verificar_permissao_perfil_local(
+        permissao=PermissionEnum.PERFIL_EDITAR_LOCAL,
+        propriedade_id=propriedade_id):
+      perfil = self.__get__perfil(perfil_id)
+        # ESSA VALIDACAO É NECESSARIA PARA NAO DEIXAR O USUARIO EDITAR O PERFIL GLOBAL
+      if perfil.is_global:
+        raise BadRequestError("Este perfil é global e não pode ser manipulado localmente")
+      if perfil.pertence_a_propriedade(propriedade_id):
+        if not nome:
+          raise BadRequestError("O campo 'nome' é obrigatório", data=nome)
+        if not permissoes:
+          raise BadRequestError("O campo 'permissoes' é obrigatório",
+                                data={'permissoes': permissoes_invalidas})
+        permissoes = [p.lower() for p in permissoes]
+        permissoes = list(set(permissoes))
+        permissoes_validas = {perm.value for perm in PermissionEnum}
+        permissoes_invalidas = [
+            p for p in permissoes if p not in permissoes_validas
+        ]
+
+        if permissoes_invalidas:
+          raise BadRequestError(message="Permissões inválidas",
+                                data={'permissoes': permissoes_invalidas})
+        perfil.nome = nome
+        perfil.permissoes = permissoes
+        db.session.commit()
+        return "Perfil atualizado com sucesso!"
+      else:
+        raise BadRequestError("Perfil não cadastrado na propriedade")
 
   def autalizar_perfil_local_usuario(self, propriedade_id, perfil_id, usuario_id):
     propriedade = self.__propriedade_existe(propriedade_id)
@@ -226,3 +257,9 @@ class PropriedadeService:
     if not propriedade:
       raise NotFoundRequestError("Propriedade nao encontrada")
     return propriedade
+
+  def __get__perfil(self, id):
+    perfil = Perfil.query.get(id)
+    if not perfil:
+      raise NotFoundRequestError("Perfil não encontrado")
+    return perfil
