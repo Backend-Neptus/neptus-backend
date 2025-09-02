@@ -27,7 +27,7 @@ mail = Mail(app)
 # FLASK DB MIGRATE -M "MESSAGE TEXT"
 # FLASK DB UPGRADE
 # CUIDADO AO FAZER MIGRATE 
-from app.models import Sensor, Turbidez, Perfil, Usuario, Propriedade
+from app.models import Perfil, Usuario, Propriedade
 
 # Importando as rotas
 from app.routes import register_routes
