@@ -14,8 +14,5 @@ def register_client_routes(app):
 
     app.add_url_rule('/v1/propriedades/usuarios/convites', 'convidar_usuario', propriedade_controller.convidar_usuario, methods=['POST'])
     app.add_url_rule('/v1/propriedades/usuarios/convites/aceite', 'convite_aceito', propriedade_controller.convite_aceito, methods=['POST'])
-    app.add_url_rule('/v1/propriedades/perfis', 'criar_perfil_local', propriedade_controller.criar_perfil_local, methods=['POST'])
-    app.add_url_rule('/v1/propriedades/perfis/<string:id>', 'atualizar_perfil_local', propriedade_controller.atualizar_perfil_local, methods=['PUT'])
-    app.add_url_rule('/v1/propriedades/perfis/usuarios', 'atualizar_perfil_usuario', propriedade_controller.atualizar_perfil_usuario, methods=['POST'])
 
 

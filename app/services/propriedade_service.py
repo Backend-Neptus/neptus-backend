@@ -10,7 +10,6 @@ from flask import g
 from app.config.app_config import APP_CONFIG
 
 from app.utils import convidar_usuario
-from app.utils.permissoes_perfil_local import PermissaoPerfilLocal
 
 
 class PropriedadeService:
@@ -151,87 +150,6 @@ class PropriedadeService:
     propriedade.usuarios.append(usuario)
     db.session.commit()
     return "Convite aceito com sucesso!"
-
-  # COMO ISSO FUNCIONA?
-  #TODO PRECISA FAZER VALIDACOES DE CAMPOS E PERMISSOES
-  def salvar_perfil_local(self, nome, permissoes, propriedade_id):
-    if not nome:
-      raise BadRequestError("O campo 'nome' é obrigatório", data=nome)
-
-    if not permissoes:
-      raise BadRequestError("O campo 'permissoes' é obrigatório",
-                            data={'permissoes': permissoes_invalidas})
-    permissoes = [p.lower() for p in permissoes]
-    permissoes = list(set(permissoes))
-    permissoes_validas = {perm.value for perm in PermissionEnum}
-    permissoes_invalidas = [
-        p for p in permissoes if p not in permissoes_validas
-    ]
-
-    if permissoes_invalidas:
-      raise BadRequestError(message="Permissões inválidas",
-                            data={'permissoes': permissoes_invalidas})
-    if PermissaoPerfilLocal().verificar_permissao_perfil_local(
-        permissao=PermissionEnum.ATRIBUIR_PERFIL,
-        propriedade_id=propriedade_id):
-      propriedade = Propriedade.query.filter_by(id=propriedade_id).first()
-      
-      if not propriedade:
-        raise NotFoundRequestError("Propriedade nao encontrada")
-      
-      perfil = Perfil(nome=nome, permissoes=permissoes)
-      propriedade.perfis.append(perfil)
-      db.session.add(perfil)
-      db.session.commit()
-    return perfil
-
-  def atualizar_perfil_local(self, perfil_id, nome, permissoes, propriedade_id):
-    if PermissaoPerfilLocal().verificar_permissao_perfil_local(
-        permissao=PermissionEnum.PERFIL_EDITAR_LOCAL,
-        propriedade_id=propriedade_id):
-      perfil = self.__get__perfil(perfil_id)
-        # ESSA VALIDACAO É NECESSARIA PARA NAO DEIXAR O USUARIO EDITAR O PERFIL GLOBAL
-      if perfil.is_global:
-        raise BadRequestError("Este perfil é global e não pode ser manipulado localmente")
-      if perfil.pertence_a_propriedade(propriedade_id):
-        if not nome:
-          raise BadRequestError("O campo 'nome' é obrigatório", data=nome)
-        if not permissoes:
-          raise BadRequestError("O campo 'permissoes' é obrigatório",
-                                data={'permissoes': permissoes_invalidas})
-        permissoes = [p.lower() for p in permissoes]
-        permissoes = list(set(permissoes))
-        permissoes_validas = {perm.value for perm in PermissionEnum}
-        permissoes_invalidas = [
-            p for p in permissoes if p not in permissoes_validas
-        ]
-
-        if permissoes_invalidas:
-          raise BadRequestError(message="Permissões inválidas",
-                                data={'permissoes': permissoes_invalidas})
-        perfil.nome = nome
-        perfil.permissoes = permissoes
-        db.session.commit()
-        return "Perfil atualizado com sucesso!"
-      else:
-        raise BadRequestError("Perfil não cadastrado na propriedade")
-
-  def autalizar_perfil_local_usuario(self, propriedade_id, perfil_id, usuario_id):
-    propriedade = self.__propriedade_existe(propriedade_id)
-    perfil = Perfil.query.get(perfil_id)
-    if perfil in propriedade.perfis:
-      if PermissaoPerfilLocal().verificar_permissao_perfil_local(
-          permissao=PermissionEnum.ATRIBUIR_PERFIL,
-          propriedade_id=propriedade_id):
-        usuario = self.__usuario_existe(usuario_id)
-        PermissaoPerfilLocal().atualizar_perfil_local(
-            usuario_id=usuario.id,
-            propriedade_id=propriedade.id,
-            novo_perfil_id=perfil.id)
-        return f"Perfil do usuario {usuario.nome} atualizado com sucesso na propriedade {propriedade.nome}!"
-    else:
-      raise BadRequestError("Perfil nao cadastrado na propriedade")
-
   # ------------------
   # METODOS AUXILIARES
   # ------------------
