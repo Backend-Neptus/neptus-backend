@@ -7,15 +7,20 @@ from app.services.auth_service import AuthService
 
 
 def register():
-  data = request.get_json()
-  try:
-    nome = data.get('nome')
-    email = data.get('email')
-    senha = data.get('senha')
-    return jsonify(
-        AuthService().registrar_usuario(nome, email, senha)), 201
-  except AppRequestError as e:
-    return jsonify(e.to_dict()), e.status_code
+  # data = request.get_json()
+  # try:
+  #   nome = data.get('nome')
+  #   email = data.get('email')
+  #   senha = data.get('senha')
+  #   return jsonify(
+  #       AuthService().registrar_usuario(nome, email, senha)), 201
+  # except AppRequestError as e:
+  #   return jsonify(e.to_dict()), e.status_code
+  return jsonify({
+            "code": "BadRequestError",
+            "message": "Registro de novos usuários está desabilitado.",
+            "status": "301"
+  }), 301
 
 
 def login():
@@ -29,17 +34,21 @@ def login():
 
 
 def authorize_google():
-  try:
-    CLIENT_ID_GOOGLE = '18188128770-tpbogkb7i4f99c3o6701e2r25ap4jtes.apps.googleusercontent.com'
-    dados = request.get_json()
-    token_google = dados['token_google']
-    idinfo = idinfo = id_token.verify_oauth2_token(token_google, requests.Request(), CLIENT_ID_GOOGLE)
-    email = idinfo['email']
-    nome = idinfo['name']
-    return jsonify(AuthService().authorize_google(nome, email)), 200
-  except AppRequestError as e:
-    return jsonify(e.to_dict()), e.status_code
-
+  # try:
+  #   CLIENT_ID_GOOGLE = '18188128770-tpbogkb7i4f99c3o6701e2r25ap4jtes.apps.googleusercontent.com'
+  #   dados = request.get_json()
+  #   token_google = dados['token_google']
+  #   idinfo = idinfo = id_token.verify_oauth2_token(token_google, requests.Request(), CLIENT_ID_GOOGLE)
+  #   email = idinfo['email']
+  #   nome = idinfo['name']
+  #   return jsonify(AuthService().authorize_google(nome, email)), 200
+  # except AppRequestError as e:
+  #   return jsonify(e.to_dict()), e.status_code
+  return jsonify({
+            "code": "BadRequestError",
+            "message": "Login social está desabilitado.",
+            "status": "301"
+  }), 301
 
 def reset_password_request():
   dados = request.get_json()

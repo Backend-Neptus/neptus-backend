@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: neptus_app
+    ports:
+      - "5000:5000"
+    environment:
+      - DATABASE_URL=postgresql://neptus:senha-segura@db:5432/tenant
+      - SECRET_KEY=neptus-chave-secreta
+      - JWT_SECRET_KEY=jwt-chave-secreta
+
+      - MAIL_SERVER=mail.cloudsyntax.com.br
+      - MAIL_PORT=587
+      - MAIL_USE_TLS=True
+      - MAIL_USERNAME=neptus@cloudsyntax.com.br
+      - MAIL_PASSWORD=y9UyPGZZ9tXahZdYuAZ4
+      - MAIL_DEFAULT_SENDER=neptus@cloudsyntax.com.br
+
+      - CONVITE_TOKEN_SECRET=convite-token-secret
+      - CONVITE_TOKEN_SALT=convite-token-salt
+      - RESET_PASSWORD_TOKEN_SECRET=reset-password-token-secret
+      - RESET_PASSWORD_TOKEN_SALT=reset-password-token-salt
+
+      - NEPTUS_URL=https://neptus.vercel.app
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:13
+    container_name: neptus_db
+    environment:
+      POSTGRES_USER: neptus
+      POSTGRES_PASSWORD: senha-segura
+      POSTGRES_DB: tenant
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
