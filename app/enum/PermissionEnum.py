@@ -52,14 +52,3 @@ class PermissionEnum(enum.Enum):
     LEITURA_POR_SENSOR = "leitura_por_sensor"
     LEITURA_CRIAR = "leitura_criar"
     LEITURA_EXCLUIR = "leitura_excluir"
-    
-    
-    
-    
-    # Permissões perfil local
-    
-    ATRIBUIR_PERFIL = "atribuir_perfil"
-    PERFIL_EDITAR_LOCAL = "atualizar_perfil_local"
-    PROPRIEDADE_CONVIDAR = "propriedade_convidar"
-    PROPRIEDADE_CONVITE_ACEITO = "propriedade_convite_aceito"
-    

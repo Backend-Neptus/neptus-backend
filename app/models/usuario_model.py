@@ -45,11 +45,11 @@ class Usuario(db.Model):
         self.nome,
         'email':
         self.email,
-        'google_login':
+        'login_google':
         self.google_login,
-        'is_admin':
-        self.is_admin,
-        'is_active':
+        'e_admin':
+        self.is_admin, 
+        'esta_ativo':
         self.is_active,
         'perfil_id':
         self.perfil_id,
@@ -57,9 +57,9 @@ class Usuario(db.Model):
         len(self.propriedades),
         'propridedade':
         [propriedade.to_dict() for propriedade in self.propriedades],
-        'created_at':
+        'criado_em':
         self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        'updated_at':
+        'atualizado_em':
         self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
     }
 
@@ -68,10 +68,10 @@ class Usuario(db.Model):
         'id': self.id,
         'nome': self.nome,
         'email': self.email,
-        'google_login': self.google_login,
-        'is_admin': self.is_admin,
-        'is_active': self.is_active,
+        'login_google': self.google_login,
+        'e_admin': self.is_admin,
+        'esta_ativo': self.is_active,
         'perfil_id': self.perfil_id,
-        'created_at': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        'updated_at': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+        'criado_em': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
+        'atualizado_em': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
     }

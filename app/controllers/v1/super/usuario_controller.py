@@ -9,8 +9,6 @@ from app.enum.PermissionEnum import PermissionEnum
 from app.services.usuario_service import UsuarioService
 
 
-@login_required
-@permission_required(PermissionEnum.USUARIO_CRIAR)
 def salvar_usuario():
   data = request.get_json()
   try:

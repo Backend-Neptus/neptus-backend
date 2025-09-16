@@ -15,7 +15,6 @@ class Perfil(db.Model):
   updated_at = db.Column(db.DateTime,
                          default=datetime.utcnow,
                          onupdate=datetime.utcnow)
-  is_global = db.Column(db.Boolean, default=False)
 
   def to_dict(self):
     return {
@@ -23,7 +22,6 @@ class Perfil(db.Model):
         "nome": self.nome,
         "permissoes": self.permissoes,
         "usuarios": len(self.usuarios),
-        "created_at": self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        "updated_at": self.updated_at.strftime('%d/%m/%Y %H:%M:%S'),
-        "is_global": self.is_global
+        "criado_em": self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
+        "atualizado_em": self.updated_at.strftime('%d/%m/%Y %H:%M:%S'),
     }

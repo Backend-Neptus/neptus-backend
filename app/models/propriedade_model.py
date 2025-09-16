@@ -2,9 +2,6 @@ from datetime import datetime
 import uuid
 from sqlalchemy.dialects.postgresql import UUID
 from app import db
-from app.exceptions.not_found_request_error import NotFoundRequestError
-from app.models.perfil_model import Perfil
-from sqlalchemy import select, join
 from app.models.utils.associacoes import propriedade_usuarios
 
 class Propriedade(db.Model):
@@ -30,6 +27,6 @@ class Propriedade(db.Model):
         'usuarios': [usuario.usuarios_to_dict() for usuario in self.usuarios],
         'proprietario_id': self.proprietario_id,
         'proprietario_nome': self.proprietario.nome,
-        'created_at': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        'updated_at': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+        'criado_em': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
+        'atualizado_em': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
     }

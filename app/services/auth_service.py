@@ -1,44 +1,43 @@
 from itsdangerous import URLSafeTimedSerializer
 from app import db
 from app.config.app_config import APP_CONFIG
-from app.exceptions import (BadRequestError, ConflictRequestError,
-                            UserDisabledError, GoogleLoginRequestError,
+from app.exceptions import (UserDisabledError, GoogleLoginRequestError,
                             NotFoundRequestError, InvalidCredentialsError)
 from app.models.usuario_model import Usuario
-from app.utils import default_perfil, reset_password, create_token
+from app.utils import reset_password, create_token
 
 
 class AuthService:
 
-  def registrar_usuario(self, nome: str, email: str, senha: str):
+  # def registrar_usuario(self, nome: str, email: str, senha: str):
 
-    if (not nome) or (not email) or (not senha):
-      raise BadRequestError(
-          "Os campos 'nome', 'email' e 'senha' devem ser preenchidos")
+  #   if (not nome) or (not email) or (not senha):
+  #     raise BadRequestError(
+  #         "Os campos 'nome', 'email' e 'senha' devem ser preenchidos")
 
-    if Usuario.query.filter_by(email=email).first():
-      raise ConflictRequestError("E-mail ja cadastrado")
+  #   if Usuario.query.filter_by(email=email).first():
+  #     raise ConflictRequestError("E-mail ja cadastrado")
 
-    perfil = default_perfil.get_default_perfil()
-    usuario = Usuario(nome=nome, email=email, perfil_id=perfil.id)
-    usuario.set_senha(senha)
-    db.session.add(usuario)
-    db.session.commit()
+  #   perfil = default_perfil.get_default_perfil()
+  #   usuario = Usuario(nome=nome, email=email, perfil_id=perfil.id)
+  #   usuario.set_senha(senha)
+  #   db.session.add(usuario)
+  #   db.session.commit()
 
-    return {
-        'access_token': create_token.create_token(id=usuario.id,
-                                                  nome=usuario.nome),
-        'refresh_token': create_token.refresh_token(id=usuario.id),
-        'mensagem': "Login efetuado com sucesso",
-        'usuario': {
-            'id': usuario.id,
-            'nome': usuario.nome,
-            'email': usuario.email,
-            'perfil': usuario.perfil.nome,
-            'is_admin': usuario.is_admin,
-            'permissoes': usuario.perfil.permissoes
-        },
-    }
+  #   return {
+  #       'access_token': create_token.create_token(id=usuario.id,
+  #                                                 nome=usuario.nome),
+  #       'refresh_token': create_token.refresh_token(id=usuario.id),
+  #       'mensagem': "Login efetuado com sucesso",
+  #       'usuario': {
+  #           'id': usuario.id,
+  #           'nome': usuario.nome,
+  #           'email': usuario.email,
+  #           'perfil': usuario.perfil.nome,
+  #           'is_admin': usuario.is_admin,
+  #           'permissoes': usuario.perfil.permissoes
+  #       },
+  #   }
 
   def login(self, email: str, senha: str):
     usuario = Usuario.query.filter_by(email=email).first()
@@ -58,52 +57,43 @@ class AuthService:
 
     return {
         'access_token': create_token.create_token(id=usuario.id,
-                                                  nome=usuario.nome),
-        'refresh_token': create_token.refresh_token(id=usuario.id),
-        'mensagem': "Login efetuado com sucesso",
-        'usuario': {
-            'id': usuario.id,
-            'nome': usuario.nome,
-            'email': usuario.email,
-            'perfil': usuario.perfil.nome,
-            'is_admin': usuario.is_admin,
-            'permissoes': usuario.perfil.permissoes
-        },
+                                                  nome=usuario.nome, email=usuario.email, isAdmin=usuario.is_admin, permissoes=usuario.perfil.permissoes, perfil=usuario.perfil.nome),
+        'refresh_token': create_token.refresh_token(id=usuario.id)
     }
 
-  def authorize_google(self, nome: str, email: str):
+  # def authorize_google(self, nome: str, email: str):
 
-    usuario = Usuario.query.filter_by(email=email).first()
+  #   usuario = Usuario.query.filter_by(email=email).first()
   
-    if not usuario:
-      perfil = default_perfil.get_default_perfil()
-      usuario = Usuario(nome=nome,
-                        email=email,
-                        perfil_id=perfil.id,
-                        google_login=True)
-      db.session.add(usuario)
-      db.session.commit()
+  #   if not usuario:
+  #     perfil = default_perfil.get_default_perfil()
+  #     usuario = Usuario(nome=nome,
+  #                       email=email,
+  #                       perfil_id=perfil.id,
+  #                       google_login=True)
+  #     db.session.add(usuario)
+  #     db.session.commit()
 
-    if not usuario.google_login:
-        raise GoogleLoginRequestError("Faça login com seu e-mail e senha.")
+  #   if not usuario.google_login:
+  #       raise GoogleLoginRequestError("Faça login com seu e-mail e senha.")
 
-    if not usuario.is_active:
-      raise UserDisabledError("Usuário desativado")
+  #   if not usuario.is_active:
+  #     raise UserDisabledError("Usuário desativado")
 
-    return {
-        'access_token': create_token.create_token(id=usuario.id,
-                                                  nome=usuario.nome),
-        'refresh_token': create_token.refresh_token(id=usuario.id),
-        'mensagem': "Login efetuado com sucesso",
-        'usuario': {
-            'id': usuario.id,
-            'nome': usuario.nome,
-            'email': usuario.email,
-            'perfil': usuario.perfil.nome,
-            'is_admin': usuario.is_admin,
-            'permissoes': usuario.perfil.permissoes
-        },
-    }
+  #   return {
+  #       'access_token': create_token.create_token(id=usuario.id,
+  #                                                 nome=usuario.nome),
+  #       'refresh_token': create_token.refresh_token(id=usuario.id),
+  #       'mensagem': "Login efetuado com sucesso",
+  #       'usuario': {
+  #           'id': usuario.id,
+  #           'nome': usuario.nome,
+  #           'email': usuario.email,
+  #           'perfil': usuario.perfil.nome,
+  #           'is_admin': usuario.is_admin,
+  #           'permissoes': usuario.perfil.permissoes
+  #       },
+  #   }
 
   def recuperar_senha(self, email: str):
     usuario = Usuario.query.filter_by(email=email).first()
@@ -129,7 +119,7 @@ class AuthService:
       raise NotFoundRequestError("Usuário nao encontrado")
     if not usuario.is_active:
       raise UserDisabledError("Usuário desativado")
-    refresh_token = create_token.create_token(usuario.id, usuario.nome)
+    refresh_token = create_token.create_token(usuario.id, usuario.nome, usuario.is_admin, usuario.perfil.nome, usuario.perfil.permissoes, usuario.email)
     return refresh_token
 
   def resetar_senha(self, token_reset: str, senha: str):

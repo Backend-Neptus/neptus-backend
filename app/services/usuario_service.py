@@ -9,29 +9,25 @@ from sqlalchemy import text
 from app import db
 from app.models.usuario_model import Usuario
 from app.models.perfil_model import Perfil
-from app.enum.PermissionEnum import PermissionEnum
 from app.exceptions import (BadRequestError, ConflictRequestError,
-                            UserDisabledError, GoogleLoginRequestError,
-                            NotFoundRequestError, InvalidCredentialsError)
+                            NotFoundRequestError)
 from app.utils import pdfkit_config
+from app.utils import default_perfil
 
 
 class UsuarioService():
 
   def registrar_usuario(nome: str, email: str, senha: str, perfil_id: str):
 
-    if (not nome) or (not email) or (not senha) or (not perfil_id):
+    if (not nome) or (not email) or (not senha):
       raise BadRequestError(
-          "Os campos 'nome', 'email', 'senha' e 'perfil_id' devem ser preenchidos"
+          "Os campos 'nome', 'email' e 'senha' devem ser preenchidos"
       )
 
     if Usuario.query.filter_by(email=email).first():
       raise ConflictRequestError("E-mail ja cadastrado")
-
-    perfil = Perfil.query.get(perfil_id)
-    if not perfil:
-      raise NotFoundRequestError("Perfil nao encontrado")
-
+    
+    perfil = default_perfil.get_default_perfil()
     usuario = Usuario(nome=nome, email=email, perfil_id=perfil.id)
     usuario.set_senha(senha)
     db.session.add(usuario)
