@@ -36,7 +36,7 @@ class PropriedadeService:
   def listar_propriedades(self, page, per_page):
     if per_page > 50:
       per_page = 50
-    propriedade = Propriedade.query.order_by(Propriedade.created_at).paginate(
+    propriedade = Propriedade.query.order_by(Propriedade.criado_em).paginate(
         page=page, per_page=per_page, error_out=False)
     return {
         'total': propriedade.total,

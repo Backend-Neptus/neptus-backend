@@ -16,12 +16,9 @@ def salvar_usuario():
     email = data.get('email')
     senha = data.get('senha')
     perfil_id = data.get('perfil_id')
-    return jsonify({
-        'messagem':
-        'Usuário cadastrado com sucesso',
-        'data':
+    return jsonify(
         UsuarioService.registrar_usuario(nome, email, senha, perfil_id).to_dict()
-    }), 201
+    ), 201
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 
@@ -40,13 +37,10 @@ def atualizar_usuario(id):
     nome = data.get('nome')
     email = data.get('email')
     perfil_id = data.get('perfil_id')
-    return jsonify({
-        "mensagem":
-        "Usuário atualizado com sucesso!",
-        "data":
+    return jsonify(
         UsuarioService.atualizar_usuario(id, nome, email,
                                          perfil_id).to_dict()
-    }), 200
+    ), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 

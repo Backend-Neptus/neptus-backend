@@ -12,18 +12,17 @@ class Usuario(db.Model):
   id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
   nome = db.Column(db.String(100), nullable=False)
   email = db.Column(db.String(120), unique=True, nullable=False)
-  senha_hash = db.Column(db.String(200), nullable=True)
-  google_login = db.Column(db.Boolean, default=False)
-  is_admin = db.Column(db.Boolean, default=False)
-  is_active = db.Column(db.Boolean, default=True)
+  senha = db.Column(db.String(200), nullable=True)
+  e_admin = db.Column(db.Boolean, default=False)
+  esta_ativo = db.Column(db.Boolean, default=True)
 
   perfil_id = db.Column(UUID(as_uuid=True),
                         db.ForeignKey('perfil.id'),
                         nullable=False)
   perfil = db.relationship('Perfil', back_populates='usuarios')
 
-  created_at = db.Column(db.DateTime, default=datetime.utcnow)
-  updated_at = db.Column(db.DateTime,
+  criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+  atualizado_em = db.Column(db.DateTime,
                          default=datetime.utcnow,
                          onupdate=datetime.utcnow)
   propriedades = db.relationship('Propriedade',
@@ -32,10 +31,10 @@ class Usuario(db.Model):
                                  overlaps="perfis")
 
   def set_senha(self, senha):
-    self.senha_hash = generate_password_hash(senha)
+    self.senha = generate_password_hash(senha)
 
   def verificar_senha(self, senha):
-    return check_password_hash(self.senha_hash, senha)
+    return check_password_hash(self.senha, senha)
 
   def to_dict(self):
     return {
@@ -45,12 +44,10 @@ class Usuario(db.Model):
         self.nome,
         'email':
         self.email,
-        'login_google':
-        self.google_login,
         'e_admin':
-        self.is_admin, 
+        self.e_admin, 
         'esta_ativo':
-        self.is_active,
+        self.esta_ativo,
         'perfil_id':
         self.perfil_id,
         'total_propriedades':
@@ -58,9 +55,9 @@ class Usuario(db.Model):
         'propridedade':
         [propriedade.to_dict() for propriedade in self.propriedades],
         'criado_em':
-        self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
+        self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
         'atualizado_em':
-        self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+        self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S')
     }
 
   def usuarios_to_dict(self):
@@ -68,10 +65,9 @@ class Usuario(db.Model):
         'id': self.id,
         'nome': self.nome,
         'email': self.email,
-        'login_google': self.google_login,
-        'e_admin': self.is_admin,
-        'esta_ativo': self.is_active,
+        'e_admin': self.e_admin,
+        'esta_ativo': self.esta_ativo,
         'perfil_id': self.perfil_id,
-        'criado_em': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        'atualizado_em': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+        'criado_em': self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
+        'atualizado_em': self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S')
     }

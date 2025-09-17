@@ -34,12 +34,9 @@ def atualizar_perfil(id):
   try:
     nome = data.get("nome")
     permissoes = data.get("permissoes", [])
-    return jsonify({
-        'messagem':
-        "Perfil atualizado com sucesso",
-        'perfil':
+    return jsonify(
         PerfilService.atualizar_perfil(id, nome, permissoes).to_dict()
-    }), 200
+    ), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 

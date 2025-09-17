@@ -11,13 +11,10 @@ def cadastrar_propriedade():
   try:
     nome = data.get('nome')
     proprietario_id = data.get('proprietario_id')
-    return jsonify({
-        'messagem':
-        'Propriedade cadastrada com sucesso',
-        'data':
+    return jsonify(
         PropriedadeService().cadastrar_propriedade(nome,
                                                    proprietario_id).to_dict()
-    }), 201
+    ), 201
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 
@@ -37,13 +34,10 @@ def atualizar_propriedade(id):
   proprietario_id = data.get('proprietario_id')
   print(id)
   try:
-    return jsonify({
-        'messagem':
-        'Propriedade atualizada com sucesso',
-        'data':
+    return jsonify(
         PropriedadeService().atualizar_propriedade(
             id, nome, proprietario_id).to_dict()
-    }), 200
+    ), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 
@@ -77,13 +71,10 @@ def adicionar_usuario():
   id_propriedade = data.get('propriedade_id')
   id_usuario = data.get('usuario_id')
   try:
-    return jsonify({
-        'mensagem':
-        "Usuario adicionado a propriedade",
-        'data':
+    return jsonify(
         PropriedadeService().adicionar_usuario(id_propriedade,
                                                id_usuario).to_dict()
-    }), 200
+    ), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 
@@ -106,13 +97,10 @@ def remover_usuario():
   id_propriedade = data.get('propriedade_id')
   id_usuario = data.get('usuario_id')
   try:
-    return jsonify({
-        'mensagem':
-        "Usuario removido da propriedade",
-        'data':
+    return jsonify(
         PropriedadeService().remover_usuario(id_propriedade,
                                              id_usuario).to_dict()
-    }), 200
+    ), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 

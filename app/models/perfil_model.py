@@ -11,8 +11,8 @@ class Perfil(db.Model):
   nome = db.Column(db.String(50), unique=False, nullable=False)
   permissoes = db.Column(ARRAY(db.String), nullable=False, default=[])
   usuarios = db.relationship('Usuario', back_populates='perfil')
-  created_at = db.Column(db.DateTime, default=datetime.utcnow)
-  updated_at = db.Column(db.DateTime,
+  criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+  atualizado_em = db.Column(db.DateTime,
                          default=datetime.utcnow,
                          onupdate=datetime.utcnow)
 
@@ -22,6 +22,6 @@ class Perfil(db.Model):
         "nome": self.nome,
         "permissoes": self.permissoes,
         "usuarios": len(self.usuarios),
-        "criado_em": self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        "atualizado_em": self.updated_at.strftime('%d/%m/%Y %H:%M:%S'),
+        "criado_em": self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
+        "atualizado_em": self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S'),
     }

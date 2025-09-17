@@ -27,7 +27,7 @@ class PerfilService:
       raise BadRequestError(message="Permissões inválidas",
                             data={'permissoes': permissoes_invalidas})
 
-    perfil = Perfil(nome=nome, permissoes=permissoes, is_global=True)
+    perfil = Perfil(nome=nome, permissoes=permissoes)
     db.session.add(perfil)
     db.session.commit()
 
@@ -36,7 +36,7 @@ class PerfilService:
   def listar_perfis(page, per_page):
     if per_page > 50:
       per_page = 50
-    perfis = Perfil.query.order_by(Perfil.created_at).paginate(
+    perfis = Perfil.query.order_by(Perfil.criado_em).paginate(
         page=page, per_page=per_page, error_out=False)
     return {
         'total': perfis.total,

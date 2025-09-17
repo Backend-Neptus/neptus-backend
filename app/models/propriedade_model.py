@@ -14,8 +14,8 @@ class Propriedade(db.Model):
                              overlaps="propriedades,perfis")
   proprietario_id = db.Column(UUID(as_uuid=True), db.ForeignKey('usuario.id'))
   proprietario = db.relationship('Usuario', foreign_keys=[proprietario_id])
-  created_at = db.Column(db.DateTime, default=datetime.utcnow)
-  updated_at = db.Column(db.DateTime,
+  criado_em = db.Column(db.DateTime, default=datetime.utcnow)
+  atualizado_em = db.Column(db.DateTime,
                          default=datetime.utcnow,
                          onupdate=datetime.utcnow)
 
@@ -27,6 +27,6 @@ class Propriedade(db.Model):
         'usuarios': [usuario.usuarios_to_dict() for usuario in self.usuarios],
         'proprietario_id': self.proprietario_id,
         'proprietario_nome': self.proprietario.nome,
-        'criado_em': self.created_at.strftime('%d/%m/%Y %H:%M:%S'),
-        'atualizado_em': self.updated_at.strftime('%d/%m/%Y %H:%M:%S')
+        'criado_em': self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
+        'atualizado_em': self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S')
     }

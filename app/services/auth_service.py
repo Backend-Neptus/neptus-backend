@@ -45,19 +45,16 @@ class AuthService:
     if not usuario:
       raise NotFoundRequestError("Usuário não cadastrado")
 
-    if not usuario.is_active:
+    if not usuario.esta_ativo:
       raise UserDisabledError("Usuário desativado")
-      
-    if usuario.google_login:
-      raise GoogleLoginRequestError(
-          "Usuário cadastrado via Google, use o login com Google")
+    
 
     if not usuario.verificar_senha(senha):
       raise InvalidCredentialsError("Email ou senha inválidos")
 
     return {
         'access_token': create_token.create_token(id=usuario.id,
-                                                  nome=usuario.nome, email=usuario.email, isAdmin=usuario.is_admin, permissoes=usuario.perfil.permissoes, perfil=usuario.perfil.nome),
+                                                  nome=usuario.nome, email=usuario.email, isAdmin=usuario.e_admin, permissoes=usuario.perfil.permissoes, perfil=usuario.perfil.nome),
         'refresh_token': create_token.refresh_token(id=usuario.id)
     }
 
@@ -104,11 +101,8 @@ class AuthService:
     if not usuario:
       raise NotFoundRequestError("E-mail não encontrado")
 
-    if not usuario.is_active:
+    if not usuario.esta_ativo:
       raise UserDisabledError("Usuário desativado")
-
-    if usuario.google_login:
-      raise GoogleLoginRequestError("Usuário cadastrado via Google")
 
     reset_password.enviar_senha(email, token_reset, usuario.nome)
     return "Caso exista uma conta cadastrada com este e-mail, um link para redefinir a senha foi enviado."
@@ -119,7 +113,7 @@ class AuthService:
       raise NotFoundRequestError("Usuário nao encontrado")
     if not usuario.is_active:
       raise UserDisabledError("Usuário desativado")
-    refresh_token = create_token.create_token(usuario.id, usuario.nome, usuario.is_admin, usuario.perfil.nome, usuario.perfil.permissoes, usuario.email)
+    refresh_token = create_token.create_token(usuario.id, usuario.nome, usuario.e_admin, usuario.perfil.nome, usuario.perfil.permissoes, usuario.email)
     return refresh_token
 
   def resetar_senha(self, token_reset: str, senha: str):

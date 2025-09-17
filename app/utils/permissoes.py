@@ -21,7 +21,7 @@ def permission_required(permissao):
                 raise UnauthorizedRequestError("Usuário não encontrado ou sem perfil associado")
             permissoes_lista = usuario.perfil.permissoes
             # Permitir acesso total para administradores
-            if usuario.is_admin:
+            if usuario.e_admin:
                 return func(*args, **kwargs)
             if permissao.value not in permissoes_lista:
                 raise UnauthorizedRequestError("Você não possui permissão para acessar esta funcionalidade!")
@@ -36,7 +36,7 @@ def login_required(func):
             usuario = carregar_usuario_logado()
             if not usuario:
                 raise UnauthorizedRequestError("Favor fazer login para acessar esta funcionalidade")
-            if not usuario.is_active:
+            if not usuario.esta_ativo:
                 raise UnauthorizedRequestError("Usuário inativo, favor entrar em contato com o administrador do sistema")
             return func(*args, **kwargs)
         except AppRequestError as e:
