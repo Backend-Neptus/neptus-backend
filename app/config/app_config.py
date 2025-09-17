@@ -1,23 +1,27 @@
 import os
 
 class APP_CONFIG:
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'postgresql://neptus:6NTm0CWr5zoy7gzJB4Xi0wyRIiBJ1sbrVO3OBhr173rTjundhPhe5fVGr671dhqb@pgadmin.cloudsyntax.com.br:54333/neptus-db')
+    SQLALCHEMY_DATABASE_URI = os.getenv(
+        'DATABASE_URL',
+        'postgresql://usuario:senha@localhost:5432/dbname'  # valor padrão (opcional)
+    )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SECRET_KEY = 'neptus-chave-secreta'
-    JWT_SECRET_KEY = 'jwt-chave-secreta'
-    
-    MAIL_SERVER = 'mail.cloudsyntax.com.br'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = 'neptus@cloudsyntax.com.br'
-    MAIL_PASSWORD = 'y9UyPGZZ9tXahZdYuAZ4'
-    MAIL_DEFAULT_SENDER = 'neptus@cloudsyntax.com.br'
-    
-    
-    CONVITE_TOKEN_SECRET = 'convite-token-secret'
-    CONVITE_TOKEN_SALT = 'convite-token-salt'
-    
-    RESET_PASSWORD_TOKEN_SECRET = 'reset-password-token-secret'
-    RESET_PASSWORD_TOKEN_SALT = 'reset-password-token-salt'
-    
-    NEPTUS_URL = 'https://neptus.vercel.app'
+
+    SECRET_KEY = os.getenv('SECRET_KEY', 'default-secret-key')
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'default-jwt-secret-key')
+
+    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.exemplo.com')
+    MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True') == 'True'
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME', 'email@exemplo.com')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD', 'senhaemail')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER', 'email@exemplo.com')
+
+    CONVITE_TOKEN_SECRET = os.getenv('CONVITE_TOKEN_SECRET', 'convite-secret')
+    CONVITE_TOKEN_SALT = os.getenv('CONVITE_TOKEN_SALT', 'convite-salt')
+
+    RESET_PASSWORD_TOKEN_SECRET = os.getenv('RESET_PASSWORD_TOKEN_SECRET', 'reset-secret')
+    RESET_PASSWORD_TOKEN_SALT = os.getenv('RESET_PASSWORD_TOKEN_SALT', 'reset-salt')
+
+    NEPTUS_URL = os.getenv('NEPTUS_URL', 'http://localhost:3000')
+
