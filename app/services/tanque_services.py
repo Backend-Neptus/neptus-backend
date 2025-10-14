@@ -25,12 +25,10 @@ class TanqueService:
         if tanque_existente:
             raise ConflictRequestError("Já existe um tanque com este nome.")
 
-        # Verifica se a propriedade existe e pertence ao usuário logado
+        # Verifica se a propriedade existe
         propriedade = Propriedade.query.get(id_propriedade)
         if not propriedade:
             raise NotFoundRequestError("Propriedade não encontrada.")
-        if str(propriedade.id_usuario) != id_usuario:
-            raise BadRequestError("Propriedade não pertence ao usuário logado.")
 
         # Cria o tanque
         novo_tanque = Tanque(

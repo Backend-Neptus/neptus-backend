@@ -3,7 +3,7 @@ import os
 class APP_CONFIG:
     SQLALCHEMY_DATABASE_URI = os.getenv(
         'DATABASE_URL',
-        'postgresql://usuario:senha@localhost:5432/dbname'  # valor padrão (opcional)
+        'postgresql://neptus:6NTm0CWr5zoy7gzJB4Xi0wyRIiBJ1sbrVO3OBhr173rTjundhPhe5fVGr671dhqb@pgadmin.cloudsyntax.com.br:54333/neptus-db'  # valor padrão (opcional)
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
