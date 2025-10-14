@@ -13,8 +13,9 @@ class Leitura(db.Model):
     usuario_id = db.Column(UUID(as_uuid=True), db.ForeignKey('usuarios.id'), nullable=False)
     propriedade_id = db.Column(UUID(as_uuid=True), db.ForeignKey('propriedades.id'), nullable=False)
     criado_em = db.Column(db.DateTime, default=db.func.now())  # Quando foi registrado no sistema
-    creat_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.Datetime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    atualizado_em = db.Column(db.DateTime,
+                            default=datetime.utcnow,
+                            onupdate=datetime.utcnow)
     
     def __repr__(self):
         return f'<Leitura {self.valor} (Propriedade: {self.propriedade_id})>'

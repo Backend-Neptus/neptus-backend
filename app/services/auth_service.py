@@ -99,13 +99,13 @@ class AuthService:
     token_reset = s.dumps(email, salt=APP_CONFIG.RESET_PASSWORD_TOKEN_SALT)
 
     if not usuario:
-      raise NotFoundRequestError("E-mail não encontrado")
+      return "Enviamos um link para redefinir a senha."
 
     if not usuario.esta_ativo:
-      raise UserDisabledError("Usuário desativado")
+      return "Enviamos um link para redefinir a senha."
 
     reset_password.enviar_senha(email, token_reset, usuario.nome)
-    return "Caso exista uma conta cadastrada com este e-mail, um link para redefinir a senha foi enviado."
+    return "Enviamos um link para redefinir a senha."
 
   def refresh_token(self, user_id: str):
     usuario = Usuario.query.get(user_id)

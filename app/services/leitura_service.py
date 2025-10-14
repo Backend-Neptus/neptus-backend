@@ -1,7 +1,6 @@
 from app import db
 from app.exceptions import BadRequestError, ConflictRequestError, NotFoundRequestError
 from app.enum.PermissionEnum import PermissionEnum
-from app.utils.permissoes import PermissaoPerfilLocal
 from app.models.leitura_model import Leitura 
 
 

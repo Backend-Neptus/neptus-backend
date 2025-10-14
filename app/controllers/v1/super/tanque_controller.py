@@ -1,7 +1,7 @@
 from flask import request, jsonify
 from app.enum.PermissionEnum import PermissionEnum
 from app.exceptions.app_request_Exception import AppRequestError
-from app.services.tanque_service import TanqueService
+from app.services.tanque_services import TanqueService
 from app.utils.permissoes import login_required, permission_required
 
 
