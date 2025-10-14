@@ -32,11 +32,9 @@ class PermissionEnum(enum.Enum):
     PERMISSAO_EXCLUIR = "permissao_excluir"
 
     # Permissões para tanques
-    TANQUE_LISTAR = "tanque_listar"
-    TANQUE_DETALHAR = "tanque_detalhar"
     TANQUE_CRIAR = "tanque_criar"
+    TANQUE_LISTAR = "tanque_listar"
     TANQUE_EDITAR = "tanque_editar"
-    TANQUE_EXCLUIR = "tanque_excluir"
 
     # Permissões para sensores
     SENSOR_LISTAR = "sensor_listar"
