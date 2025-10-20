@@ -3,6 +3,7 @@ def register_super_routes(app):
     perfil_controller,
     propriedade_controller,
     usuario_controller,
+    tanque_controller,
     )
     # ROTAS ADMINISTRATIVAS
 
@@ -28,3 +29,11 @@ def register_super_routes(app):
     app.add_url_rule('/v1/super/propriedades/<string:id>', 'detalhar_propriedade', propriedade_controller.detalhar_propriedade, methods=['GET'])
     app.add_url_rule('/v1/super/propriedades/usuarios/adicionar', 'adicionar_usuario', propriedade_controller.adicionar_usuario, methods=['POST'])
     app.add_url_rule('/v1/super/propriedades/usuarios/remover', 'remover_usuario', propriedade_controller.remover_usuario, methods=['POST'])
+
+    # Tanques
+    app.add_url_rule('/v1/super/tanques', 'cadastrar_tanque', tanque_controller.cadastrar_tanque, methods=['POST'])
+    app.add_url_rule('/v1/super/tanques', 'listar_tanques', tanque_controller.listar_tanques, methods=['GET'])
+    app.add_url_rule('/v1/super/tanques/<string:id>', 'atualizar_tanque', tanque_controller.atualizar_tanque, methods=['PUT'])
+    app.add_url_rule('/v1/super/tanques/<string:id>', 'detalhar_tanque', tanque_controller.detalhar_tanque, methods=['GET'])
+    app.add_url_rule('/v1/super/tanques/<string:id>/status', 'desativar_tanque', tanque_controller.desativar_tanque, methods=['PATCH'])
+
