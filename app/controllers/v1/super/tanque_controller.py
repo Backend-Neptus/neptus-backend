@@ -26,7 +26,7 @@ def cadastrar_tanque():
             qtd_peixe=qtd_peixe
         )
 
-        return jsonify(tanque.to_dict()), 201
+        return jsonify(tanque), 201
 
     except AppRequestError as e:
         return jsonify(e.to_dict()), e.status_code
