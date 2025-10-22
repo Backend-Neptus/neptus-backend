@@ -4,9 +4,9 @@ from app.services.leitura_service import LeituraService
 from app.exceptions.app_request_Exception import AppRequestError
 
 @login_required
-def listar_leituras(page=1, per_page=20):
+def listar_leituras(tanque_id, page=1, per_page=20):
     try:
-        return LeituraService.listar_todas_leituras(page, per_page)
+        return LeituraService.listar_todas_leituras(tanque_id, page, per_page)
     except AppRequestError as e:
         raise e
     
@@ -20,7 +20,6 @@ def buscar_leitura(leitura_id):
 @login_required    
 def criar_leitura(): # USUARIO ID VAI VIR DO CONTEXTO FLASK (G)
     data = request.get_json()
-    usuario_id = data.get('usuario_id')
     tanque_id = data.get('tanque_id')
     turbidez = data.get('turbidez')
     oxigenio = data.get('oxigenio')
@@ -28,9 +27,8 @@ def criar_leitura(): # USUARIO ID VAI VIR DO CONTEXTO FLASK (G)
     ph = data.get('ph')
     amonia = data.get('amonia')
     imagem_cor = data.get('imagem_cor')
-
     try:
-        return LeituraService.criar_leitura(usuario_id, tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor)
+        return LeituraService.criar_leitura(tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor)
     except AppRequestError as e:
         raise e
     

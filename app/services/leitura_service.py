@@ -2,11 +2,13 @@ from app import db
 from app.exceptions import BadRequestError, ConflictRequestError, NotFoundRequestError
 from app.enum.PermissionEnum import PermissionEnum
 from app.models.leitura_model import Leitura
-from app.models.usuario_model import Usuario 
+from app.models.tanque_model import Tanque
+from app.models.usuario_model import Usuario
+from flask import g 
 
 
 class LeituraService:
-    def listar_todas_leituras(page, per_page, tanque_id):
+    def listar_todas_leituras(tanque_id, page, per_page):
         
         #TODO SO PODE RETORNAR AS LEITURAS RELACIONADAS A PROPRIEDADE DO USUARIO LOGADO - IMPLEMENTAR DEPOIS
         if per_page > 50:
@@ -30,9 +32,12 @@ class LeituraService:
             raise NotFoundRequestError("Leitura não encontrada.")
         return leitura.to_dict()
 
-    def criar_leitura(usuario_id, tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor):
+    def criar_leitura(tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor):
         if not turbidez:
             raise BadRequestError("O campo 'turbidez' deve ser preenchido.")
+
+        usuario_id = str(g.usuario.id)  # pega o usuário autenticado
+
         if not usuario_id or not tanque_id:
             raise BadRequestError("Os campos 'usuario_id' e 'tanque_id' devem ser preenchidos.")
         
@@ -40,7 +45,7 @@ class LeituraService:
         if not usuario:
             raise NotFoundRequestError("Usuário não encontrado.")
 
-        tanque = Leitura.query.filter_by(tanque=tanque_id).first()
+        tanque = Tanque.query.get(tanque_id)
         if not tanque:
             raise NotFoundRequestError("Tanque não encontrado.")
 
