@@ -50,10 +50,11 @@ class Usuario(db.Model):
         self.esta_ativo,
         'perfil_id':
         self.perfil_id,
+        'perfil_nome': self.perfil.nome if self.perfil else None,
         'total_propriedades':
         len(self.propriedades),
-        'propridedade':
-        [propriedade.to_dict() for propriedade in self.propriedades],
+        'propriedades':
+        [propriedade.nome for propriedade in self.propriedades],
         'criado_em':
         self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
         'atualizado_em':
@@ -68,6 +69,8 @@ class Usuario(db.Model):
         'e_admin': self.e_admin,
         'esta_ativo': self.esta_ativo,
         'perfil_id': self.perfil_id,
+        'perfil_nome': self.perfil.nome if self.perfil else None,
+        'total_propriedades': len(self.propriedades),
         'criado_em': self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
         'atualizado_em': self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S')
     }

@@ -49,15 +49,9 @@ def atualizar_usuario(id):
 @permission_required(PermissionEnum.USUARIO_EDITAR)
 def status_usuario(id):
   data = request.get_json()
+  status = data.get('status')
   try:
-    usuario = UsuarioService.status_usuario(id, data['status'])
-    return jsonify({
-        "mensagem":
-        f"Usuário {'ativado' if usuario.is_active else 'desativado'} com sucesso!",
-        "data":
-        usuario.to_dict()
-    }), 200
-    
+    return jsonify(UsuarioService.status_usuario(id, status)), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
 
@@ -70,4 +64,4 @@ def buscar_usuario(id):
     return jsonify(e.to_dict()), e.status_code
 
 def relatorio_usuarios():
-  return UsuarioService.relatorio_usuarios(), 200
+  return jsonify(UsuarioService.relatorio_usuarios()), 200
