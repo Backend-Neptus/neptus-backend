@@ -35,7 +35,7 @@ def login_required(func):
         try:
             usuario = carregar_usuario_logado()
             if not usuario:
-                raise UnauthorizedRequestError("Favor fazer login para acessar esta funcionalidade")
+                raise UnauthorizedRequestError("Você não possui permissão para acessar esta funcionalidade!")
             if not usuario.esta_ativo:
                 raise UnauthorizedRequestError("Usuário inativo, favor entrar em contato com o administrador do sistema")
             return func(*args, **kwargs)

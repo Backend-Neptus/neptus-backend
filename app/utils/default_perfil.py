@@ -3,11 +3,11 @@ from app import db
 from app.models.perfil_model import Perfil
 
 def get_default_perfil():
-    perfil = db.session.query(Perfil).filter(Perfil.nome == "Usuario").first()
+    perfil = db.session.query(Perfil).filter(Perfil.nome == "USUARIO").first()
 
     if not perfil:
         perfil = Perfil(
-            nome="Usuario",
+            nome="USUARIO",
             permissoes=[
                 # Permissões para tanques
                 "tanque_listar",

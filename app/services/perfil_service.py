@@ -11,11 +11,13 @@ class PerfilService:
   def criar_perfil(nome, permissoes):
 
     if not nome:
-      raise BadRequestError("O campo 'nome' é obrigatório", data=nome)
-
-    if not permissoes:
-      raise BadRequestError("O campo 'permissoes' é obrigatório",
-                            data={'permissoes': permissoes_invalidas})
+      raise BadRequestError("O campo 'nome' é obrigatório")
+    nome = nome.upper()
+    if permissoes == '' or permissoes is None or len(permissoes) == 0:
+      raise BadRequestError("O campo 'permissoes' é obrigatório")
+    if Perfil.query.filter_by(nome=nome).first():
+      raise ConflictRequestError("Já existe um perfil com esse nome")
+    
     permissoes = [p.lower() for p in permissoes]
     permissoes = list(set(permissoes))
     permissoes_validas = {perm.value for perm in PermissionEnum}
@@ -24,8 +26,7 @@ class PerfilService:
     ]
 
     if permissoes_invalidas:
-      raise BadRequestError(message="Permissões inválidas",
-                            data={'permissoes': permissoes_invalidas})
+      raise BadRequestError(message="Permissões inválidas")
 
     perfil = Perfil(nome=nome, permissoes=permissoes)
     db.session.add(perfil)
@@ -47,22 +48,26 @@ class PerfilService:
     }
   
   def atualizar_perfil(id, nome, permissoes):
+    if not nome:
+      raise BadRequestError("O campo 'nome' é obrigatório")
     perfil = Perfil.query.filter_by(id=id).first()
-
+    nome = nome.upper()
     perfil_default = get_default_perfil()
     if perfil.id == perfil_default.id:
       if nome != perfil_default.nome:
         raise BadRequestError("O campo 'nome' não pode ser alterado para o perfil default")
     
-    if not perfil:
-      raise NotFoundRequestError("Perfil nao encontrado")
 
-    if not nome:
-      raise BadRequestError("O campo 'nome' é obrigatório", data=nome)
+    if perfil.nome != nome:
+      perfil_existente = Perfil.query.filter_by(nome=nome).first()
+      if perfil_existente and perfil_existente.id != id:
+        raise ConflictRequestError("Já existe um perfil com esse nome")
+
+    if not perfil:
+      raise NotFoundRequestError("Perfil não encontrado")
 
     if not permissoes:
-      raise BadRequestError("O campo 'permissoes' é obrigatório",
-                            data={'permissoes': permissoes_invalidas})
+      raise BadRequestError("O campo 'permissoes' é obrigatório")
     permissoes = [p.lower() for p in permissoes]
     permissoes = list(set(permissoes))
     permissoes_validas = {perm.value for perm in PermissionEnum}
@@ -71,8 +76,8 @@ class PerfilService:
     ]
 
     if permissoes_invalidas:
-      raise BadRequestError(message="Permissões inválidas",
-                            data={'permissoes': permissoes_invalidas})
+      raise BadRequestError(message="Permissões inválidas")
+    
 
     perfil.nome = nome
     perfil.permissoes = permissoes
@@ -85,11 +90,11 @@ class PerfilService:
     perfil = Perfil.query.filter_by(id=id).first()
 
     if not perfil:
-      raise NotFoundRequestError("Perfil nao encontrado")
+      raise NotFoundRequestError("Perfil não encontrado")
 
     perfil_default = get_default_perfil()
     if perfil.id == perfil_default.id:
-      raise BadRequestError("Perfil default nao pode ser deletado")
+      raise BadRequestError("Perfil default não pode ser deletado")
 
     for usuario in perfil.usuarios:
       usuario.perfil_id = perfil_default.id
@@ -103,6 +108,6 @@ class PerfilService:
   def buscar_perfil(id):
     perfil = Perfil.query.filter_by(id=id).first()
     if not perfil:
-      raise NotFoundRequestError("Perfil nao encontrado")
+      raise NotFoundRequestError("Perfil não encontrado")
     return perfil
   
