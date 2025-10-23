@@ -54,19 +54,8 @@ def detalhar_propriedade(id):
 
 
 @login_required
+@permission_required(PermissionEnum.PROPRIEDADE_EDITAR)
 def adicionar_usuario():
-  """
-  Adiciona um usuario a uma propriedade.
-  ---
-  tags:
-    - Propriedade
-  responses:
-    200:
-      description: Usuario adicionado a propriedade
-      examples:
-        application/json:
-          mensagem: Usuario adicionado a propriedade
-  """
   data = request.get_json()
   id_propriedade = data.get('propriedade_id')
   id_usuario = data.get('usuario_id')
@@ -80,19 +69,8 @@ def adicionar_usuario():
 
 
 @login_required
+@permission_required(PermissionEnum.PROPRIEDADE_EDITAR)
 def remover_usuario():
-  """
-  Remove um usuario de uma propriedade.
-  ---
-  tags:
-    - Propriedade
-  responses:
-    200:
-      description: Usuario removido da propriedade
-      examples:
-        application/json:
-          mensagem: Usuario removido da propriedade
-  """
   data = request.get_json()
   id_propriedade = data.get('propriedade_id')
   id_usuario = data.get('usuario_id')

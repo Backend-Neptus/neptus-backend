@@ -30,3 +30,14 @@ class Propriedade(db.Model):
         'criado_em': self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
         'atualizado_em': self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S')
     }
+
+  def propriedades_to_dict(self):
+    return {
+        'id': self.id,
+        'nome': self.nome,
+        'total_usuarios': len(self.usuarios),
+        'proprietario_id': self.proprietario_id,
+        'proprietario_nome': self.proprietario.nome,
+        'criado_em': self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
+        'atualizado_em': self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S')
+    }
