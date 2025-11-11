@@ -20,10 +20,16 @@ class TanqueService:
         id_usuario = str(g.usuario.id)  # pega o usuário autenticado
         self.__verificar_dados(nome, area_tanque, tipo_peixe)
 
-        # Verifica duplicidade de nome (pode limitar à propriedade, se quiser)
-        tanque_existente = Tanque.query.filter_by(nome=nome).first()
+        # Verifica duplicidade apenas dentro da mesma propriedade
+        tanque_existente = Tanque.query.filter_by(
+            nome=nome,
+            id_propriedade=id_propriedade
+        ).first()
+
         if tanque_existente:
-            raise ConflictRequestError("Já existe um tanque com este nome.")
+            raise ConflictRequestError(
+                "Já existe um tanque com este nome nesta propriedade."
+            )
 
         # Verifica se a propriedade existe
         propriedade = Propriedade.query.get(id_propriedade)
@@ -47,13 +53,18 @@ class TanqueService:
 
         return novo_tanque.to_dict()
     
-    def listar_tanques(self, page, per_page):
-        """Lista todos os tanques com paginação."""
+    def listar_tanques(self, id_propriedade, page, per_page):
+        """Lista os tanques de uma propriedade específica, com paginação."""
         if per_page > 50:
             per_page = 50
 
-        tanques = Tanque.query.order_by(Tanque.criado_em)\
+        # Filtra apenas os tanques da propriedade informada
+        tanques = (
+            Tanque.query
+            .filter_by(id_propriedade=id_propriedade)
+            .order_by(Tanque.criado_em.desc())
             .paginate(page=page, per_page=per_page, error_out=False)
+        )
 
         return {
             'total': tanques.total,
@@ -64,10 +75,6 @@ class TanqueService:
         }
     
     def exibir_tanque(self, id_tanque):
-        """
-        Retorna os dados de um tanque específico para edição.
-        O front-end pode usar esses dados para preencher o formulário.
-        """
         tanque = Tanque.query.get(id_tanque)
         if not tanque:
             raise NotFoundRequestError("Tanque não encontrado.")
@@ -83,8 +90,7 @@ class TanqueService:
         }
     
     def atualizar_tanque(self, id_tanque, dados: dict):
-        """Atualiza os dados de um tanque existente."""
-        
+        """Atualiza os dados de um tanque existente."""        
         # Busca o tanque pelo ID
         tanque = Tanque.query.get(id_tanque)
         if not tanque:
@@ -109,18 +115,17 @@ class TanqueService:
         db.session.commit()
         return tanque.to_dict()
     
-    def desativar_tanque(self, id_tanque):
-        """
-        Desativa um tanque existente, marcando 'ativo' como False.
-        """
+    def status_tanque(self, id_tanque):
         tanque = Tanque.query.get(id_tanque)
         if not tanque:
             raise NotFoundRequestError("Tanque não encontrado.")
 
-        tanque.ativo = False
+        # Inverte o status
+        tanque.ativo = not tanque.ativo
+
         db.session.commit()
         return tanque.to_dict()
-
+    
     # ---------------- MÉTODOS PRIVADOS ---------------- #
 
     def __verificar_dados(self, nome, area_tanque, tipo_peixe):
