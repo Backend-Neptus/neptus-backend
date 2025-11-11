@@ -1,15 +1,19 @@
 import uuid
 from datetime import datetime, timezone
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.dialects.postgresql import UUID
 from app import db
 
 class Tanque(db.Model):
     __tablename__ = 'tanque'
+    __table_args__ = (
+        UniqueConstraint('id_propriedade', 'nome', name='uq_tanque_nome_propriedade'),
+    )
     
     id = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     id_usuario = db.Column(UUID(as_uuid=True), db.ForeignKey('usuario.id'))
     id_propriedade = db.Column(UUID(as_uuid=True), db.ForeignKey('propriedade.id'))
-    nome = db.Column(db.String(50), unique=True, nullable=False)
+    nome = db.Column(db.String(50), nullable=False)
     area_tanque = db.Column(db.Float, nullable=False)
     tipo_peixe = db.Column(db.String(50), nullable=False)
     peso_peixe = db.Column(db.Float, nullable=True)
