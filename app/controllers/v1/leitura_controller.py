@@ -1,11 +1,16 @@
 from app.utils.permissoes import login_required
-from flask import request
+from flask import request, jsonify
+
 from app.services.leitura_service import LeituraService
 from app.exceptions.app_request_Exception import AppRequestError
 
 @login_required
-def listar_leituras(tanque_id, page=1, per_page=20):
+def listar_leituras(page=1, per_page=50):
     try:
+        page = request.args.get('page', 1, type=int)
+        per_page = request.args.get('per_page', 50, type=int)
+        tanque_id = request.args.get('tanque_id') 
+        print(tanque_id)
         return LeituraService.listar_todas_leituras(tanque_id, page, per_page)
     except AppRequestError as e:
         raise e
@@ -28,7 +33,7 @@ def criar_leitura(): # USUARIO ID VAI VIR DO CONTEXTO FLASK (G)
     amonia = data.get('amonia')
     imagem_cor = data.get('imagem_cor')
     try:
-        return LeituraService.criar_leitura(tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor)
+        return LeituraService.criar_leitura(tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor), 201
     except AppRequestError as e:
         raise e
     
@@ -45,3 +50,8 @@ def deletar_leitura(leitura_id):
         return LeituraService.deletar_leitura(leitura_id)
     except AppRequestError as e:
         raise e
+
+@login_required
+def criar_leituras_em_lote():
+    data = request.get_json()
+    return LeituraService.criar_leituras_em_lote(data)

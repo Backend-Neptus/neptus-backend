@@ -16,8 +16,9 @@ def register_client_routes(app):
     app.add_url_rule('/v1/propriedades/usuarios/convites', 'convidar_usuario', propriedade_controller.convidar_usuario, methods=['POST'])
     app.add_url_rule('/v1/propriedades/usuarios/convites/aceite', 'convite_aceito', propriedade_controller.convite_aceito, methods=['POST'])
 
-    app.add_url_rule('/v1/<tanque_id>/leituras/', 'listar_leituras', leitura_controller.listar_leituras, methods=['GET'])
+    app.add_url_rule('/v1/leituras/', 'listar_leituras', leitura_controller.listar_leituras, methods=['GET'])
     app.add_url_rule('/v1/leituras/<leitura_id>', 'buscar_leitura', leitura_controller.buscar_leitura,methods=['GET'])
     app.add_url_rule('/v1/leituras', 'criar_leitura', leitura_controller.criar_leitura, methods=['POST'])
+    app.add_url_rule('/v1/leituras/lote', 'criar_leituras_em_lote', leitura_controller.criar_leituras_em_lote, methods=['POST'])
     app.add_url_rule('/v1/leituras/<leitura_id>', 'atualizar_leitura',leitura_controller.atualizar_leitura, methods=['PUT'])
     app.add_url_rule('/v1/leituras/<leitura_id>', 'deletar_leitura', leitura_controller.deletar_leitura, methods=['DELETE'])
