@@ -115,18 +115,17 @@ class TanqueService:
         db.session.commit()
         return tanque.to_dict()
     
-    def desativar_tanque(self, id_tanque):
-        """
-        Desativa um tanque existente, marcando 'ativo' como False.
-        """
+    def status_tanque(self, id_tanque):
         tanque = Tanque.query.get(id_tanque)
         if not tanque:
             raise NotFoundRequestError("Tanque não encontrado.")
 
-        tanque.ativo = False
+        # Inverte o status
+        tanque.ativo = not tanque.ativo
+
         db.session.commit()
         return tanque.to_dict()
-
+    
     # ---------------- MÉTODOS PRIVADOS ---------------- #
 
     def __verificar_dados(self, nome, area_tanque, tipo_peixe):

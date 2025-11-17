@@ -73,12 +73,16 @@ def atualizar_tanque(id):
 
 @login_required
 @permission_required(PermissionEnum.TANQUE_EDITAR)
-def desativar_tanque(id):   
+def status_tanque(id):
     try:
-        tanque = TanqueService().desativar_tanque(id)
+        tanque = TanqueService().status_tanque(id)
+
+        status = "ativado" if tanque["ativo"] else "desativado"
+
         return jsonify({
-            "mensagem": f"Tanque '{tanque['nome']}' desativado com sucesso.",
+            "mensagem": f"Tanque '{tanque['nome']}' {status} com sucesso.",
             "tanque": tanque
         }), 200
+    
     except AppRequestError as e:
         return jsonify(e.to_dict()), e.status_code

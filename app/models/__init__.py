@@ -3,3 +3,4 @@
 from app.models.perfil_model import Perfil
 from app.models.usuario_model import Usuario
 from app.models.propriedade_model import Propriedade
+from app.models.tanque_model import Tanque
