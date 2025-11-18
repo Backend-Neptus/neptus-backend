@@ -13,6 +13,7 @@ def register_client_routes(app):
     app.add_url_rule('/auth/reset-password', 'reset_password', auth_controller.reset_password, methods=['POST'])
     app.add_url_rule('/auth/login/google', 'authorize_google', auth_controller.authorize_google, methods=['POST'])
 
+    app.add_url_rule('/v1/propriedades/associadas', 'listar_leituras_usuarios', propriedade_controller.listar_leituras_usuarios, methods=['GET'])
     app.add_url_rule('/v1/propriedades/usuarios/convites', 'convidar_usuario', propriedade_controller.convidar_usuario, methods=['POST'])
     app.add_url_rule('/v1/propriedades/usuarios/convites/aceite', 'convite_aceito', propriedade_controller.convite_aceito, methods=['POST'])
 

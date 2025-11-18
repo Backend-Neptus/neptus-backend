@@ -36,3 +36,12 @@ def convite_aceito():
     }), 200
   except AppRequestError as e:
     return jsonify(e.to_dict()), e.status_code
+
+
+@login_required
+def listar_leituras_usuarios():
+  try:
+    leituras = PropriedadeService().listar_leituras_usuarios()
+    return jsonify(leituras), 200
+  except AppRequestError as e:
+    return jsonify(e.to_dict()), e.status_code

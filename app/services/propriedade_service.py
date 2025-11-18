@@ -1,10 +1,11 @@
+from sqlalchemy import or_
 from app.exceptions import (BadRequestError, ConflictRequestError,
                             NotFoundRequestError)
 from app import db
 from app.models.perfil_model import Perfil
 from app.models.propriedade_model import Propriedade
 from app.models.usuario_model import Usuario
-
+from flask import g
 class PropriedadeService:
 
   def cadastrar_propriedade(self, nome: str, proprietario_id: str):
@@ -89,6 +90,19 @@ class PropriedadeService:
     db.session.commit()
     return propriedade
   
+
+
+  def listar_leituras_usuarios(self):
+
+    usuario_id = str(g.usuario.id) 
+    print(usuario_id)
+    propriedades = Propriedade.query.filter(
+    or_(
+        Propriedade.proprietario_id == usuario_id,
+        Propriedade.usuarios.any(Usuario.id == usuario_id)
+    )
+    ).all()
+    return [propriedade.propriedades_to_dict() for propriedade in propriedades]
   # ------------------
   # METODOS AUXILIARES
   # ------------------
