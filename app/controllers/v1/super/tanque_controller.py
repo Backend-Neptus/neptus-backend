@@ -51,8 +51,8 @@ def listar_tanques():
 
 
 @login_required
-@permission_required(PermissionEnum.TANQUE_EDITAR)
-def detalhar_tanque(id):    
+@permission_required(PermissionEnum.TANQUE_LISTAR)
+def exibir_tanque(id):    
     try:
         tanque = TanqueService().exibir_tanque(id)
         return jsonify(tanque), 200

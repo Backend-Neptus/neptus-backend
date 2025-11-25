@@ -32,8 +32,8 @@ def register_super_routes(app):
 
     # Tanques
     app.add_url_rule('/v1/super/tanques', 'cadastrar_tanque', tanque_controller.cadastrar_tanque, methods=['POST'])
-    app.add_url_rule('/v1/super/tanques', 'listar_tanques', tanque_controller.listar_tanques, methods=['GET'])
+    app.add_url_rule('/v1/super/tanques/<string:id_propriedade>', 'listar_tanques', tanque_controller.listar_tanques, methods=['GET'])
     app.add_url_rule('/v1/super/tanques/<string:id>', 'atualizar_tanque', tanque_controller.atualizar_tanque, methods=['PUT'])
-    app.add_url_rule('/v1/super/tanques/<string:id>', 'detalhar_tanque', tanque_controller.detalhar_tanque, methods=['GET'])
+    app.add_url_rule('/v1/super/tanques/<string:id>', 'exibir_tanque', tanque_controller.exibir_tanque, methods=['GET'])
     app.add_url_rule('/v1/super/tanques/<string:id>/status', 'desativar_tanque', tanque_controller.status_tanque, methods=['PATCH'])
 
