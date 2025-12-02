@@ -13,8 +13,10 @@ app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)
 app.config.from_object(APP_CONFIG)
 swagger = Swagger(app)
-
-oauth = OAuth(app)
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "pool_pre_ping": True,
+    "echo_pool": "debug"
+}
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
