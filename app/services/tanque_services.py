@@ -57,7 +57,8 @@ class TanqueService:
         """Lista os tanques de uma propriedade específica, com paginação."""
         if per_page > 50:
             per_page = 50
-
+        if not id_propriedade:
+            raise NotFoundRequestError("Parâmetro id_propriedade é obrigatório.")
         # Filtra apenas os tanques da propriedade informada
         tanques = (
             Tanque.query
