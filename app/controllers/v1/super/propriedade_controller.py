@@ -22,8 +22,8 @@ def cadastrar_propriedade():
 @login_required
 @permission_required(PermissionEnum.PROPRIEDADE_LISTAR)
 def listar_propriedades():
-  page = request.args.get('page', 1, type=int)
-  per_page = request.args.get('per_page', 10, type=int)
+  page = request.args.get('pagina_atual', 1, type=int)
+  per_page = request.args.get('itens_por_pagina', 10, type=int)
   return jsonify(PropriedadeService().listar_propriedades(page, per_page)), 200
 
 @login_required

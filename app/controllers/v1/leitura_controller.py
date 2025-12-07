@@ -7,8 +7,8 @@ from app.exceptions.app_request_Exception import AppRequestError
 @login_required
 def listar_leituras(page=1, per_page=50):
     try:
-        page = request.args.get('page', 1, type=int)
-        per_page = request.args.get('per_page', 50, type=int)
+        page = request.args.get('pagina_atual', 1, type=int)
+        per_page = request.args.get('itens_por_pagina', 50, type=int)
         tanque_id = request.args.get('tanque_id') 
         print(tanque_id)
         return LeituraService.listar_todas_leituras(tanque_id, page, per_page)

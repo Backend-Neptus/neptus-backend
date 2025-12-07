@@ -23,8 +23,8 @@ def salvar_perfil():
 @login_required
 @permission_required(PermissionEnum.PERFIL_LISTAR)
 def listar_perfil():
-  page = request.args.get('page', 1, type=int)
-  per_page = request.args.get('per_page', 10, type=int)
+  page = request.args.get('pagina_atual', 1, type=int)
+  per_page = request.args.get('itens_por_pagina', 10, type=int)
   return jsonify(PerfilService.listar_perfis(page, per_page)), 200
 
 @login_required

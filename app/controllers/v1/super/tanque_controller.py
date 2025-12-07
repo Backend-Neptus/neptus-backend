@@ -36,8 +36,8 @@ def cadastrar_tanque():
 @permission_required(PermissionEnum.TANQUE_LISTAR)
 def listar_tanques(id_propriedade):
     """Lista tanques de uma propriedade específica (via query string)."""
-    page = request.args.get('page', 1, type=int)
-    per_page = request.args.get('per_page', 50, type=int)
+    page = request.args.get('pagina_atual', 1, type=int)
+    per_page = request.args.get('itens_por_pagina', 50, type=int)
     try:
         resultado = TanqueService().listar_tanques(id_propriedade, page, per_page)
         return jsonify(resultado), 200

@@ -25,8 +25,8 @@ def salvar_usuario():
 @login_required
 @permission_required(PermissionEnum.USUARIO_LISTAR)
 def listar_usuarios():
-  page = request.args.get('page', 1, type=int)
-  per_page = request.args.get('per_page', 10, type=int)
+  page = request.args.get('pagina_atual', 1, type=int)
+  per_page = request.args.get('itens_por_pagina', 10, type=int)
   return jsonify(UsuarioService.listar_usuarios(page, per_page)), 200
 
 @login_required
