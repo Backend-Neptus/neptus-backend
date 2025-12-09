@@ -54,7 +54,7 @@ class Usuario(db.Model):
         'total_propriedades':
         len(self.propriedades),
         'propriedades':
-        [propriedade.nome for propriedade in self.propriedades],
+        [(propriedade.nome, propriedade.id) for propriedade in self.propriedades],
         'criado_em':
         self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
         'atualizado_em':
