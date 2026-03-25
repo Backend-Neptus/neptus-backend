@@ -16,7 +16,7 @@ class Leitura(db.Model):
     temperatura = db.Column(db.Float, nullable=False)  
     ph = db.Column(db.Float, nullable=False)   
     amonia = db.Column(db.Float, nullable=False)   
-    imagem_cor = db.Column(db.String(50), unique=False, nullable=False)
+    cor_agua = db.Column(db.Integer, nullable=False)
     criado_em = db.Column(db.DateTime, default=db.func.now())  # Quando foi registrado no sistema
     atualizado_em = db.Column(db.DateTime,
                             default=datetime.utcnow,
@@ -32,7 +32,7 @@ class Leitura(db.Model):
             'temperatura': self.temperatura,
             'ph': self.ph,
             'amonia': self.amonia,
-            'imagem_cor': self.imagem_cor,
+            'corAgua': self.cor_agua,
             'criado_em': self.criado_em.strftime('%d/%m/%Y %H:%M:%S'),
             'atualizado_em': self.atualizado_em.strftime('%d/%m/%Y %H:%M:%S'),
           }  

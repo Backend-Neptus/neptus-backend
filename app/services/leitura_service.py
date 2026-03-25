@@ -30,7 +30,7 @@ class LeituraService:
             raise NotFoundRequestError("Leitura não encontrada.")
         return leitura.to_dict()
 
-    def criar_leitura(tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor):
+    def criar_leitura(tanque_id, turbidez, oxigenio, temperatura, ph, amonia, cor_agua):
         if not turbidez:
             raise BadRequestError("O campo 'turbidez' deve ser preenchido.")
 
@@ -49,7 +49,7 @@ class LeituraService:
 
         leitura = Leitura(usuario_id=usuario_id, tanque=tanque_id, turbidez=turbidez,
                           oxigenio=oxigenio, temperatura=temperatura,
-                          ph=ph, amonia=amonia, imagem_cor=imagem_cor)
+                          ph=ph, amonia=amonia, cor_agua=cor_agua)
         db.session.add(leitura)
         db.session.commit()
         return leitura.to_dict()
@@ -81,6 +81,15 @@ class LeituraService:
         if not usuario_id:
             raise BadRequestError("Usuário não autenticado.")
 
+
+        usuario = Usuario.query.get(usuario_id)
+        if not usuario:
+            raise NotFoundRequestError("Usuário não encontrado.")
+
+
+        tanques_ids = {leitura_data.get('tanque_id') for leitura_data in lote}
+        tanques_validos = {t.id: t for t in Tanque.query.filter(Tanque.id.in_(tanques_ids)).all()}
+
         leituras_criadas = []
         leituras_erradas = []
 
@@ -91,37 +100,53 @@ class LeituraService:
             temperatura = leitura_data.get('temperatura')
             ph = leitura_data.get('ph')
             amonia = leitura_data.get('amonia')
-            imagem_cor = leitura_data.get('imagem_cor')
+            cor_agua = leitura_data.get('cor_agua')
 
             try:
-                leitura = LeituraService.criar_leitura(
-                tanque_id, turbidez, oxigenio, temperatura, ph, amonia, imagem_cor
-            )
-            except:
-                leitura = {"tanque_id": tanque_id, 
-                           "turbidez": turbidez,
-                            "oxigenio": oxigenio,
-                            "temperatura": temperatura,
-                            "ph": ph,
-                            "amonia": amonia,
-                            "imagem_cor": imagem_cor
-                           }
+                if not turbidez:
+                    raise BadRequestError("O campo 'turbidez' deve ser preenchido.")
+                if not tanque_id or tanque_id not in tanques_validos:
+                    raise NotFoundRequestError("Tanque não encontrado.")
+                if cor_agua is None or cor_agua < 1 or cor_agua > 5:
+                    raise BadRequestError("O campo 'cor_agua' deve ser um inteiro entre 1 e 5.")
 
-                leituras_erradas.append(leitura)
-                continue
-            leituras_criadas.append(leitura)
+                leitura = Leitura(
+                    usuario_id=usuario_id, 
+                    tanque=tanque_id, 
+                    turbidez=turbidez,
+                    oxigenio=oxigenio, 
+                    temperatura=temperatura,
+                    ph=ph, 
+                    amonia=amonia, 
+                    cor_agua=cor_agua
+                )
+                db.session.add(leitura)
+                leituras_criadas.append(leitura)
 
-        db.session.commit()
+            except (BadRequestError, NotFoundRequestError) as e:
+                leitura_dict = {
+                    "tanque_id": tanque_id, 
+                    "turbidez": turbidez,
+                    "oxigenio": oxigenio,
+                    "temperatura": temperatura,
+                    "ph": ph,
+                    "amonia": amonia,
+                    "cor_agua": cor_agua,
+                    "erro": str(e)
+                }
+                leituras_erradas.append(leitura_dict)
+
+        if leituras_criadas:
+            db.session.commit()
+
         if leituras_erradas:
-            # Caso existam tanques inválidos
             return jsonify({
                 "code": "ConflictRequestError",
-                "message": "Falha ao criar leituras, alguns tanques são inválidos.",
+                "message": "Falha parcial. Alguns registros corromperam validation.",
                 "status": 409,
                 "leituras_erradas": leituras_erradas
             }), 409
 
-        # Caso tudo tenha dado certo
         return jsonify({
             "code": "Success",
             "message": "Leituras criadas com sucesso.",
