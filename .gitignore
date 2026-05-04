@@ -1,0 +1,45 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*$py.class
+
+# === Virtual Environments ===
+venv/
+env/
+.venv/
+.env/
+.env.*
+
+# === Flask ===
+instance/
+*.log
+*.pot
+.cache/
+__pypackages__/
+
+# === VSCode ===
+.vscode/
+
+# === PyCharm ===
+.idea/
+*.iml
+
+# === Pytest ===
+.cache/
+.pytest_cache/
+
+# === Coverage ===
+htmlcov/
+.coverage
+coverage.xml
+*.cover
+*.py,cover
+
+# === Distribuição / build ===
+build/
+dist/
+*.egg-info/
+
+# === Arquivos do sistema ===
+.DS_Store
+Thumbs.db
